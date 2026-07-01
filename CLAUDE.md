@@ -5,7 +5,8 @@ Guidance for Claude Code when working in **this** repo.
 ## What this repo is
 
 A **meta-template**: reusable scaffolding for creating Claude Code *workspace hubs* that drive
-one or more sibling code repos spec-first, via symlinks. This repo is **not** itself a
+one or more code repos spec-first, via symlinks (the repos can be siblings, nested in
+subfolders, or elsewhere on disk). This repo is **not** itself a
 workspace — it's the source you copy from. There is no app, no build, no dependencies, and no
 generator script; it's just Markdown scaffolding wired up by hand (usually by Claude). See
 `README.md` for the full description and setup steps.
@@ -29,9 +30,10 @@ and be replaced when a workspace is instantiated.
 
 - **Symlink math.** In the canonical layout a workspace lives at `<parent>/workspaces/<name>/`
   and its repo symlinks are `../../<repo>`, resolving to `<parent>/<repo>` (two levels up). But
-  the layout is not fixed — repos may sit at other depths or parents, so each symlink's relative
-  target is whatever actually resolves to the real repo. Keep the diagrams and prose consistent,
-  and compute the correct depth for the real layout rather than assuming `../../`.
+  the layout is not fixed — repos may sit at other depths or parents, be nested in subfolders,
+  or live outside `<parent>` entirely, so each symlink's target (relative *or* absolute) is
+  whatever actually resolves to the real repo. Keep the diagrams and prose consistent, and
+  compute the correct target for the real layout rather than assuming `../../`.
 - **Two spec models stay in sync.** The choice between *workspace-level* and *per-repo* specs is
   described in several files — root `README.md`, `template/CLAUDE.md`, `template/README.md`,
   `template/CONTEXT.md`, `template/specs/README.md`, and `spec-model-per-repo/README.md`. A
@@ -45,9 +47,10 @@ There's no script — do it by hand, adapting to the real repo layout. The steps
 `README.md`):
 
 1. Copy `template/` to the workspace folder.
-2. For each repo, `ln -s <relative-path-to-repo> <repo>` from the workspace folder, then confirm
-   `ls <repo>/` shows that repo's files. Compute the relative path for the **actual** layout —
-   only use `../../<repo>` if the canonical two-levels-up shape truly holds.
+2. For each repo, `ln -s <path-to-repo> <repo>` from the workspace folder (a relative path of any
+   depth, or an absolute one), then confirm `ls <repo>/` shows that repo's files. Compute the
+   target for the **actual** layout — only use `../../<repo>` if the canonical two-levels-up
+   shape truly holds.
 3. Pick the spec model: keep the workspace `specs/` (workspace-level), or delete it and copy
    `spec-model-per-repo/{README.md,_TEMPLATE.md}` into each repo's `specs/` plus a `done/`
    (per-repo).
