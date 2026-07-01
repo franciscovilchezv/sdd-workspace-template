@@ -6,8 +6,12 @@ lives in one or more separate repos, linked here via symlinks.
 
 ## Layout this workspace expects
 
-This folder lives under `<parent>/workspaces/`. Its symlinks point two levels up (`../../`) at
-sibling repos, so this workspace must sit **next to** those repos:
+<!-- Edit this diagram to show where THIS workspace's repos actually live. The common case is
+     sibling repos two levels up (../../<repo>); repos may instead be nested in subfolders or
+     live elsewhere on disk — whatever each symlink resolves to. -->
+
+This folder lives under `<parent>/workspaces/`; each symlink points at a linked repo wherever it
+lives on disk (in the common case, two levels up at a sibling — `../../<repo>`):
 
 ```
 <parent>/
@@ -17,8 +21,8 @@ sibling repos, so this workspace must sit **next to** those repos:
         └── <repo>  -> ../../<repo>
 ```
 
-If you move it elsewhere, the symlinks dangle — recreate the structure above (or re-point the
-symlinks) so they resolve.
+If you move the workspace (or a repo), the symlinks dangle — recreate the structure above, or
+re-point the symlinks, so each `ls <repo>/` resolves.
 
 ## Setting up on a new machine
 

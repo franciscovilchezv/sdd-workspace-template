@@ -17,19 +17,25 @@ Reusable scaffolding for a **Claude Code workspace hub** that drives one or more
 ## Expected on-disk layout
 
 The **canonical** shape (as in the reference workspaces) is a shared parent with the repos flat
-beside a `workspaces/` folder:
+beside a `workspaces/` folder. But repos don't have to be flat siblings — they can be nested in
+subfolders, or live somewhere else entirely; each symlink just has to resolve to the real repo:
 
 ```
 <parent>/
-├── <repo>/                      # your real code repo (own .git)
+├── <repo>/                          # a repo as a flat sibling (canonical)
+├── <group>/
+│   └── <nested-repo>/               # …or nested inside a subfolder
 └── workspaces/
-    └── <workspace-name>/        # a copy of template/, with placeholders filled in
-        └── <repo> -> ../../<repo>
+    └── <workspace-name>/            # a copy of template/, with placeholders filled in
+        ├── <repo>        -> ../../<repo>
+        └── <nested-repo> -> ../../<group>/<nested-repo>
+
+/elsewhere/<external-repo>/          # …or outside <parent> altogether
+#   (symlinked as  <external-repo> -> /elsewhere/<external-repo>)
 ```
 
-This is only the common case. Repos can sit at other depths, under a different parent, or the
-workspace can live elsewhere — the setup adapts (see step 2 below). The one hard requirement is
-that each `<repo>` symlink resolves to the real repo.
+The only hard requirement is that each `<repo>` symlink resolves to the real repo — its target
+is whatever relative or absolute path points there from the workspace folder.
 
 ## Set up a workspace
 
@@ -39,13 +45,14 @@ Code to do it, so the result matches whatever the real repos actually look like:
 1. **Copy the template.** Copy `template/` to your workspace folder — conventionally
    `<parent>/workspaces/<workspace-name>/`, but anywhere works as long as the symlinks resolve.
 2. **Symlink each repo.** From the workspace folder, create one symlink per repo, named after
-   the repo, pointing at the real repo:
+   the repo, pointing at wherever the real repo actually lives:
    ```bash
-   ln -s <relative-path-to-repo> <repo>
+   ln -s ../../<repo>                 <repo>            # flat sibling (canonical)
+   ln -s ../../<group>/<nested-repo>  <nested-repo>     # nested in a subfolder
+   ln -s /elsewhere/<external-repo>   <external-repo>   # anywhere on disk (absolute)
    ```
-   For the canonical layout that path is `../../<repo>` (two levels up). If your repos live at
-   other depths or under a different parent, use the correct relative (or absolute) path for
-   each — the only test is that `ls <repo>/` shows that repo's files.
+   Pick each target per repo — a relative path (any depth) or an absolute one. The only test is
+   that `ls <repo>/` from the workspace shows that repo's files.
 3. **Pick a spec model.**
    - *Workspace-level* (default): keep the workspace's `specs/`.
    - *Per-repo*: delete the workspace's `specs/`, then copy `spec-model-per-repo/README.md` and
