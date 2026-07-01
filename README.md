@@ -16,6 +16,9 @@ Reusable scaffolding for a **Claude Code workspace hub** that drives one or more
 
 ## Expected on-disk layout
 
+The **canonical** shape (as in the reference workspaces) is a shared parent with the repos flat
+beside a `workspaces/` folder:
+
 ```
 <parent>/
 ├── <repo>/                      # your real code repo (own .git)
@@ -24,24 +27,32 @@ Reusable scaffolding for a **Claude Code workspace hub** that drives one or more
         └── <repo> -> ../../<repo>
 ```
 
-## Use it
+This is only the common case. Repos can sit at other depths, under a different parent, or the
+workspace can live elsewhere — the setup adapts (see step 2 below). The one hard requirement is
+that each `<repo>` symlink resolves to the real repo.
 
-Option A — script:
+## Set up a workspace
 
-```bash
-./new-workspace.sh [--specs workspace|per-repo] <parent-dir> <workspace-name> <repo> [<repo2> ...]
-```
+There's no generator script — you wire a workspace up by hand, or (more usually) ask Claude
+Code to do it, so the result matches whatever the real repos actually look like:
 
-This copies `template/` into `<parent>/workspaces/<workspace-name>/`, creates a `../../<repo>`
-symlink for each repo, and verifies the symlinks resolve. `--specs` (default `workspace`) picks
-the spec model: `workspace` keeps the workspace's `specs/`; `per-repo` removes it and scaffolds
-a `specs/` inside each linked repo instead. Then fill in the `<...>` placeholders in
-`CLAUDE.md`, `CONTEXT.md`, `README.md`, `.claude/settings.json`, and `.vscode/settings.json`,
-and delete the spec-model paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
-
-Option B — manual: copy `template/` to your workspace folder, create the symlinks, replace
-placeholders. For the per-repo model, delete the workspace's `specs/` and copy
-`spec-model-per-repo/` into each linked repo's `specs/` instead.
+1. **Copy the template.** Copy `template/` to your workspace folder — conventionally
+   `<parent>/workspaces/<workspace-name>/`, but anywhere works as long as the symlinks resolve.
+2. **Symlink each repo.** From the workspace folder, create one symlink per repo, named after
+   the repo, pointing at the real repo:
+   ```bash
+   ln -s <relative-path-to-repo> <repo>
+   ```
+   For the canonical layout that path is `../../<repo>` (two levels up). If your repos live at
+   other depths or under a different parent, use the correct relative (or absolute) path for
+   each — the only test is that `ls <repo>/` shows that repo's files.
+3. **Pick a spec model.**
+   - *Workspace-level* (default): keep the workspace's `specs/`.
+   - *Per-repo*: delete the workspace's `specs/`, then copy `spec-model-per-repo/README.md` and
+     `_TEMPLATE.md` into each linked repo's own `specs/` (add a `specs/done/` too).
+4. **Fill in placeholders.** Replace the `<...>` tokens in `CLAUDE.md`, `CONTEXT.md`,
+   `README.md`, `.claude/settings.json`, and `.vscode/settings.json`, and delete the spec-model
+   paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
 
 ## Files
 
@@ -58,6 +69,6 @@ In `template/` (copied into each new workspace):
 At the template-repo root (source for the per-repo model; not copied wholesale):
 
 - `spec-model-per-repo/README.md`, `spec-model-per-repo/_TEMPLATE.md` — the per-repo SDD
-  scaffold, dropped into each linked repo's `specs/` when you choose `--specs per-repo`.
+  scaffold, copied into each linked repo's `specs/` when you choose the per-repo model.
 
 Replace every `<placeholder>` (e.g. `<workspace-name>`, `<repo>`, `<project / product name>`).
