@@ -49,11 +49,11 @@ directory), point it at this repo, and describe the workspace. For example:
 
 > Set up a new SDD workspace using the template at
 > `https://github.com/franciscovilchezv/sdd-workspace-template` — clone it, read its README, and
-> follow it. Name the workspace `client-response-generation` and link these repos, using the
-> per-repo spec model:
-> - `/Users/me/git/chatbot-mcpclient`
-> - `/Users/me/git/chatbot-web`
-> - `/Users/me/git/whatsapp-bridge`
+> follow it. Name the workspace `checkout-flow` and link these repos, using the per-repo spec
+> model:
+> - `/Users/me/git/api-service`
+> - `/Users/me/git/web-app`
+> - `/Users/me/git/worker`
 >
 > Fill in the placeholders from what you find in those repos; leave any `<...>` you can't
 > determine for me to complete.
