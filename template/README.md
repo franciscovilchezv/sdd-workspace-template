@@ -1,0 +1,42 @@
+# <workspace-name> workspace
+
+A Claude Code **workspace hub** for working on **<project / product name>**. It contains only
+workspace docs, the spec-driven-development workflow, and Claude Code config; the actual code
+lives in one or more separate repos, linked here via symlinks.
+
+## Layout this workspace expects
+
+This folder lives under `<parent>/workspaces/`. Its symlinks point two levels up (`../../`) at
+sibling repos, so this workspace must sit **next to** those repos:
+
+```
+<parent>/
+├── <repo>/                  # a linked code repo
+└── workspaces/
+    └── <workspace-name>/    ← this workspace
+        └── <repo>  -> ../../<repo>
+```
+
+If you move it elsewhere, the symlinks dangle — recreate the structure above (or re-point the
+symlinks) so they resolve.
+
+## Setting up on a new machine
+
+1. Clone the linked repo(s) into `<parent>/`.
+2. Place this workspace at `<parent>/workspaces/<workspace-name>`.
+3. Verify each symlink resolves: `ls <repo>/` should show that repo's files.
+4. Open Claude Code from this workspace folder.
+
+## Spec-driven development (workspace level)
+
+Specs live **here**, in `specs/` — intentionally **not** inside the linked repo(s), so each
+repo's own conventions and team workflow stay untouched. Copy `specs/_TEMPLATE.md`, fill it in,
+implement against it, then move it to `specs/done/`. See `specs/README.md`.
+
+## Files
+
+- `CLAUDE.md` — workspace rules (auto-loaded by Claude Code).
+- `CONTEXT.md` — domain context and architecture summary (read manually).
+- `specs/` — spec-driven-development workflow (template, README, `done/`).
+- `.claude/settings.json` — shared, machine-agnostic permission allowlist.
+- `.claude/settings.local.json` — per-machine settings; **gitignored**, not shared.
