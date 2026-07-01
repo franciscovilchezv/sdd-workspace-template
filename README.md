@@ -42,6 +42,18 @@ is whatever relative or absolute path points there from the workspace folder.
 There's no generator script — you wire a workspace up by hand, or (more usually) ask Claude
 Code to do it, so the result matches whatever the real repos actually look like.
 
+### Install the skill (zero-clone flow)
+
+If you spin up workspaces often, install the bundled Claude Code skill once and skip the
+clone-and-point step entirely. It carries its own copy of `template/` + `spec-model-per-repo/`:
+
+```bash
+cp -R skill/sdd-workspace ~/.claude/skills/sdd-workspace   # or a repo's .claude/skills/
+```
+
+Then just describe the workspace in any session (*"set up an SDD workspace named … linking …"*)
+and the skill runs the steps below. See `skill/README.md`.
+
 ### Ask Claude (the intended flow)
 
 Open Claude Code in the folder where the workspace should live (e.g. your `workspaces/`
