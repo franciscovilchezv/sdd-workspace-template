@@ -40,7 +40,32 @@ is whatever relative or absolute path points there from the workspace folder.
 ## Set up a workspace
 
 There's no generator script — you wire a workspace up by hand, or (more usually) ask Claude
-Code to do it, so the result matches whatever the real repos actually look like:
+Code to do it, so the result matches whatever the real repos actually look like.
+
+### Ask Claude (the intended flow)
+
+Open Claude Code in the folder where the workspace should live (e.g. your `workspaces/`
+directory), point it at this repo, and describe the workspace. For example:
+
+> Set up a new SDD workspace using the template at
+> `https://github.com/franciscovilchezv/sdd-workspace-template` — clone it, read its README, and
+> follow it. Name the workspace `client-response-generation` and link these repos, using the
+> per-repo spec model:
+> - `/Users/me/git/chatbot-mcpclient`
+> - `/Users/me/git/chatbot-web`
+> - `/Users/me/git/whatsapp-bridge`
+>
+> Fill in the placeholders from what you find in those repos; leave any `<...>` you can't
+> determine for me to complete.
+
+Claude clones this repo (for `template/`, plus `spec-model-per-repo/` if you chose the per-repo
+model), then carries out the manual steps below against the paths you gave it.
+
+### Manual steps
+
+If you only have this repo's URL, first clone it — `git clone --depth 1 <url>` into a scratch
+dir — so you have `template/` and `spec-model-per-repo/` to copy from. That clone is throwaway;
+nothing in the finished workspace links back to it.
 
 1. **Copy the template.** Copy `template/` to your workspace folder — conventionally
    `<parent>/workspaces/<workspace-name>/`, but anywhere works as long as the symlinks resolve.

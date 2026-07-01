@@ -43,8 +43,10 @@ and be replaced when a workspace is instantiated.
 
 ## Instantiating a workspace (what to do when asked to set one up)
 
-There's no script — do it by hand, adapting to the real repo layout. The steps (full version in
-`README.md`):
+There's no script — do it by hand, adapting to the real repo layout. If you were handed only
+this repo's URL (Claude opened in the user's `workspaces/` dir), clone it first
+(`git clone --depth 1`) to a scratch dir so you have `template/` and `spec-model-per-repo/` to
+copy from; that clone is throwaway. The steps (full version in `README.md`):
 
 1. Copy `template/` to the workspace folder.
 2. For each repo, `ln -s <path-to-repo> <repo>` from the workspace folder (a relative path of any
