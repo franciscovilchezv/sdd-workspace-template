@@ -8,6 +8,10 @@ Those repos have their own teams, conventions, and tooling; we drive our work sp
 without adding a `specs/` workflow to them. Specs reference workspace docs
 ([`../CONTEXT.md`](../CONTEXT.md)) and each repo's own `CLAUDE.md` for architecture.
 
+> This is the **workspace-level** spec model. If instead this workspace uses the **per-repo**
+> model (specs versioned inside each linked repo), delete this `specs/` directory — the spec
+> workflow then lives in each repo's own `specs/README.md`. See the workspace `README.md`.
+
 ## Workflow
 
 1. Copy the template:

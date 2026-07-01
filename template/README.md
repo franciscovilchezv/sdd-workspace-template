@@ -27,16 +27,23 @@ symlinks) so they resolve.
 3. Verify each symlink resolves: `ls <repo>/` should show that repo's files.
 4. Open Claude Code from this workspace folder.
 
-## Spec-driven development (workspace level)
+## Spec-driven development
 
-Specs live **here**, in `specs/` — intentionally **not** inside the linked repo(s), so each
-repo's own conventions and team workflow stay untouched. Copy `specs/_TEMPLATE.md`, fill it in,
-implement against it, then move it to `specs/done/`. See `specs/README.md`.
+This workspace works spec-first, using **one** of two spec models (see `CLAUDE.md`; keep the
+matching paragraph there and delete the other):
+
+- **Workspace-level** — specs live **here**, in `specs/`, intentionally **not** inside the
+  linked repo(s), so each repo's own conventions and team workflow stay untouched. Copy
+  `specs/_TEMPLATE.md`, fill it in, implement against it, then move it to `specs/done/`. See
+  `specs/README.md`.
+- **Per-repo** — specs live inside each linked repo's own `specs/` (versioned with that repo);
+  cross-repo features get a companion spec per repo, one marked lead. In this model the
+  workspace has no `specs/` — see each repo's `specs/README.md`.
 
 ## Files
 
 - `CLAUDE.md` — workspace rules (auto-loaded by Claude Code).
 - `CONTEXT.md` — domain context and architecture summary (read manually).
-- `specs/` — spec-driven-development workflow (template, README, `done/`).
+- `specs/` — the SDD workflow (workspace-level model only; template, README, `done/`).
 - `.claude/settings.json` — shared, machine-agnostic permission allowlist.
 - `.claude/settings.local.json` — per-machine settings; **gitignored**, not shared.

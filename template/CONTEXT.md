@@ -30,5 +30,6 @@ See each repo's `CLAUDE.md` for the full command list.
 
 - **<term>** — <definition>
 - **<term>** — <definition>
-- **spec** — a workspace-level description of intended behavior that drives implementation
-  (see `specs/README.md`). Lives here, not in the linked repo(s).
+- **spec** — a description of intended behavior that drives implementation, written before
+  the code. Lives either in this workspace's `specs/` or in each linked repo's own `specs/`,
+  depending on the spec model this workspace chose (see `CLAUDE.md`).

@@ -27,10 +27,18 @@ workspace rules.
 
 ## Spec-driven development
 
-Feature work is described as a spec before implementation. **Specs live at the workspace
-level**, in this workspace's own `specs/` directory — deliberately **not** inside the linked
-repo(s). The linked repos have their own teams and conventions, and we don't want to add a
-`specs/` workflow to them. Keeping specs here lets us drive implementation spec-first without
-changing how those repos' developers work.
+Feature work is described as a spec before implementation. This workspace uses **one** of two
+spec models — **keep the matching paragraph below and delete the other:**
 
-Copy `specs/_TEMPLATE.md`, fill it in, and implement against it. See `specs/README.md`.
+<!-- MODEL A — workspace-level specs -->
+**Specs live at the workspace level**, in this workspace's own `specs/` directory —
+deliberately **not** inside the linked repo(s). The linked repos have their own teams and
+conventions, and we don't want to add a `specs/` workflow to them. Keeping specs here lets us
+drive implementation spec-first without changing how those repos' developers work. Copy
+`specs/_TEMPLATE.md`, fill it in, and implement against it. See `specs/README.md`.
+
+<!-- MODEL B — per-repo specs (delete MODEL A above and the workspace-level specs/ dir) -->
+**Specs live per-repo**, in each linked repo's own `specs/` directory (versioned with that
+repo) — not at the workspace level. A feature that spans multiple repos gets a companion spec
+in each affected repo, cross-linked, with one marked as the lead. Copy that repo's
+`specs/_TEMPLATE.md`, fill it in, and implement against it. See each repo's `specs/README.md`.
