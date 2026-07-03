@@ -42,6 +42,7 @@ the MCP loop suits teams that prefer structured subagents.
 | File | Role |
 |---|---|
 | `playwright.config.ts` | `testDir: ./e2e`, `webServer` boots the app via the `<app-repo>/` symlink, `list` + HTML reporters, screenshot/video/trace **on** for every test. |
+| `tsconfig.json` | Scopes the TS server to `e2e/` + `playwright.config.ts` and pulls in `@types/node` (`process`, `__dirname`). Excludes the `<app-repo>/` symlink so the app's own config wins there. |
 | `.env.e2e.example` | Template for the one secret authenticated tests need. Copy to `.env.e2e` (gitignored). |
 | `e2e/example.spec.ts` | Sample **unauthenticated** test — replace with a real signed-out flow. |
 | `e2e/authed/example.spec.ts` | Sample **authenticated** test — starts already signed in via saved session. |
@@ -57,8 +58,8 @@ scaffolds. Everything uses `<placeholder>` tokens (`<workspace-name>`, `<app-rep
 
 Run these from the workspace folder (the copy of `template/`).
 
-1. **Copy the shared files in.** Copy `playwright.config.ts`, `.env.e2e.example`, `e2e/`, and
-   `gitignore-additions.txt` (as `.gitignore` additions) into the workspace root.
+1. **Copy the shared files in.** Copy `playwright.config.ts`, `tsconfig.json`, `.env.e2e.example`,
+   `e2e/`, and `gitignore-additions.txt` (as `.gitignore` additions) into the workspace root.
 
 2. **Copy your chosen loop.** From `authoring-mcp/` **or** `authoring-cli/`, copy its
    `package.json` into the workspace root, then follow that subdir's `README.md` for its
@@ -67,7 +68,8 @@ Run these from the workspace folder (the copy of `template/`).
 
 3. **Fill placeholders.** In `playwright.config.ts` set `<app-repo>` (the symlink name of the
    web app), `<dev-server-cmd>` (e.g. `npm run dev` / `bun dev`), and the `url`/`baseURL` port if
-   not 3000. In `package.json` set `<workspace-name>`.
+   not 3000. In `tsconfig.json` set the same `<app-repo>` in `exclude`. In `package.json` set
+   `<workspace-name>`.
 
 4. **Wire gitignore.** Append `gitignore-additions.txt` to the workspace `.gitignore`.
 
