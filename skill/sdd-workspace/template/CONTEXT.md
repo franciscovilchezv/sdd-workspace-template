@@ -18,6 +18,9 @@ deliver it. Name each linked repo and its role.>
 - **<area, e.g. Frontend>** — <stack / key choices>
 - **<area, e.g. Backend>** — <stack / key choices>
 - **<area, e.g. Runtime / tooling>** — <stack / key choices>
+<!-- If the workspace adopted the optional Playwright E2E module (e2e-playwright/), note it here,
+     e.g.: "E2E — workspace-level Playwright suite driving <app-repo> as a black box." Delete
+     this line otherwise. -->
 
 ## Common commands (run inside the relevant repo)
 

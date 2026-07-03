@@ -1,0 +1,15 @@
+{
+  "name": "<workspace-name>-e2e",
+  "private": true,
+  "description": "Workspace-level Playwright E2E suite. Lives in the workspace and drives the linked app repo as a black box (see the adopting spec). Authored with the Playwright MCP (init-agents planner/generator/healer). Does NOT touch the app repo.",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed --project=chromium",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "dotenv": "^17.4.2"
+  }
+}

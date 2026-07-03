@@ -20,6 +20,21 @@
 - [ ]
 - [ ]
 
+<!-- OPTIONAL — keep this "## E2E coverage" section only if this workspace adopted the Playwright
+     E2E module (e2e-playwright/); delete it otherwise. -->
+## E2E coverage
+
+<Which acceptance criteria are verified by a Playwright test at `e2e/<this-spec-slug>.spec.ts`
+(same kebab-case slug as this file), and which are left to unit/component tests in the linked
+repo. Cover the **browser-observable** criteria here; "None — unit-only" is valid for specs with
+no browser-facing behavior (e.g. schema/logic-only work).
+
+If the feature is role-specific, name the seeded **role(s)** the tests run as (from `e2e/roles.ts`);
+omit if the default role is fine. Name a role, never an email or password.
+
+A failing E2E test is fixed by changing the app **code** (usual case) or the **test** — never by
+weakening this spec or an assertion to match a bug.>
+
 ## Changes
 
 <Modules / routes / components / endpoints that change, grouped by repo if more than one.>

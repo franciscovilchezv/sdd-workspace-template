@@ -39,3 +39,25 @@ without adding a `specs/` workflow to them. Specs reference workspace docs
   **Open questions** listing only what's still undecided.
 - Once a spec is fully implemented, **move it to `specs/done/`** (`mv specs/<name>.md specs/done/`).
   `specs/` then lists only what's still in flight; `specs/done/` is the shipped record.
+
+<!-- OPTIONAL E2E BLOCK — keep only if this workspace adopted the Playwright E2E module
+     (e2e-playwright/); delete this "## E2E testing" section and the `## E2E coverage` step in
+     `_TEMPLATE.md` otherwise. -->
+## E2E testing
+
+- The workspace owns a Playwright E2E suite at the workspace-root `e2e/`, run with
+  `npm run test:e2e` from the workspace root. It lives here (not in the linked repo) and drives
+  the running app as a black box, so it never imports app source. Setup and rationale:
+  [`../e2e-playwright/README.md`](../e2e-playwright/README.md) (or wherever you kept the module's
+  README after adopting it).
+- **Definition of done includes E2E:** a spec's browser-observable acceptance criteria must have
+  a passing `e2e/<slug>.spec.ts` before it moves to `specs/done/`. Each spec's
+  **`## E2E coverage`** section says what's covered by Playwright vs. left to the repo's own
+  unit/component tests. Unit-only specs need no E2E file.
+- **Failing-test triage** — a red E2E test routes to exactly one of three fixes by root cause:
+  1. the app **code** (most common — reality doesn't match the spec, so fix the app),
+  2. the **test** (stale selector / race — patch the test), or
+  3. the **spec** (only when a human decides the requirement itself was wrong — re-plan).
+
+  Never make a red test green by weakening the spec or an assertion to match a bug. The spec is
+  the fixed point that code and tests move toward, not the thing that moves.

@@ -21,6 +21,8 @@ Everything you copy from lives next to this file:
 - `template/` — copied **wholesale** into the new workspace folder.
 - `spec-model-per-repo/{README.md,_TEMPLATE.md}` — copied into each repo's `specs/` **only** if
   the per-repo spec model is chosen.
+- `e2e-playwright/` — copied into the workspace **only** if a linked repo is a browser-facing web
+  app and the user wants a workspace-level Playwright E2E suite. Follow its `README.md`.
 
 Refer to them by absolute path. The skill root is the directory containing this `SKILL.md`;
 build paths from there (e.g. `"$SKILL_DIR/template"`), don't assume the current working
@@ -37,6 +39,11 @@ Before scaffolding, make sure you have (ask only for what's missing):
 4. **Spec model** — *workspace-level* (default) or *per-repo*. If unstated, default to
    workspace-level and say so.
 5. **Product / project name** — for placeholders; infer from the repos if you can.
+6. **E2E?** — whether to add a workspace-level Playwright E2E suite. Only relevant if a linked
+   repo is a browser-facing web app. If unstated, default to **no** and mention it's available.
+   If yes, also ask the **authoring loop**: Playwright **MCP** (`init-agents` subagents) or the
+   Playwright **agent CLI** (`@playwright/cli` + skills). If unstated, default to the CLI loop and
+   say so.
 
 ## Steps
 
@@ -62,16 +69,33 @@ Before scaffolding, make sure you have (ask only for what's missing):
      repo's own `specs/` copy `spec-model-per-repo/README.md` and `spec-model-per-repo/_TEMPLATE.md`
      and add an empty `specs/done/`. In `CLAUDE.md` keep MODEL B and delete MODEL A.
 
-4. **Fill in placeholders.** Replace every `<...>` token — `<workspace-name>`,
+4. **Optional — add E2E.** Only if the user wants a workspace-level Playwright E2E suite (a
+   linked repo serves a web UI). Follow `e2e-playwright/README.md`. Copy the **shared** files —
+   `playwright.config.ts`, `.env.e2e.example`, `e2e/`, and `gitignore-additions.txt` (append to
+   the workspace `.gitignore`) — then the **chosen authoring loop** from its subdir:
+   - **MCP** (`e2e-playwright/authoring-mcp/`): copy its `package.json`, `.mcp.json`, and
+     `.claude/agents/` in. Agents are pre-modified; don't re-run `init-agents` unless upgrading.
+   - **Agent CLI** (`e2e-playwright/authoring-cli/`): copy its `package.json` in, then run
+     `npx playwright-cli install --skills` at the workspace root and commit the resulting
+     `.claude/skills/playwright-cli/`. No subagents.
+
+   Set `<app-repo>` / `<dev-server-cmd>` in the config and `<workspace-name>` in `package.json`.
+   **Keep** the optional E2E blocks in `CLAUDE.md`, `README.md`, `CONTEXT.md`, `specs/README.md`,
+   and `specs/_TEMPLATE.md`, and in `CLAUDE.md` keep only the authoring-loop line for the loop you
+   picked. If E2E is **not** adopted, **delete** those *delete-if-unused* E2E blocks from the five
+   files so no stray E2E instructions ship.
+
+5. **Fill in placeholders.** Replace every `<...>` token — `<workspace-name>`,
    `<project / product name>`, `<repo>`, `<one-line role>`, etc. — in `CLAUDE.md`, `CONTEXT.md`,
-   `README.md`, `.claude/settings.json`, and `.vscode/settings.json`. Fill the repo table in
-   `CLAUDE.md` (one row per linked repo) and the layout diagram in `README.md` to match the
-   **actual** paths. Read each linked repo (its `CLAUDE.md`, `README`, `package.json`/manifest)
+   `README.md`, `.claude/settings.json`, and `.vscode/settings.json` (and, if E2E was adopted,
+   `playwright.config.ts`, `package.json`, `e2e/roles.ts`, `e2e/auth.setup.ts`). Fill the repo
+   table in `CLAUDE.md` (one row per linked repo) and the layout diagram in `README.md` to match
+   the **actual** paths. Read each linked repo (its `CLAUDE.md`, `README`, `package.json`/manifest)
    to fill roles, stack, and commands. **Leave blank any `<...>` you genuinely can't determine**
    and tell the user which ones need their input.
 
-5. **Confirm.** Report the created path, the symlinks and that each resolves, the chosen spec
-   model, and any placeholders you left for the user.
+6. **Confirm.** Report the created path, the symlinks and that each resolves, the chosen spec
+   model, whether E2E was added, and any placeholders you left for the user.
 
 ## Invariants — keep these true
 
@@ -84,3 +108,9 @@ Before scaffolding, make sure you have (ask only for what's missing):
 - **Placeholders get filled, not shipped blank.** The `<...>` tokens ship blank in the template
   on purpose; in a *generated* workspace they should be replaced (or explicitly flagged back to
   the user), never left as literal `<...>` silently.
+- **E2E is all-or-nothing.** Either adopt the `e2e-playwright/` module *and* keep the optional
+  E2E blocks in the workspace docs, or adopt neither — never leave the E2E doc blocks in a
+  workspace that has no `e2e/` suite, and never copy the harness without wiring the docs.
+- **Exactly one authoring loop.** If E2E is adopted, copy the MCP loop **or** the CLI loop, not
+  both, and keep only that loop's authoring-loop line in `CLAUDE.md`. Don't leave `.mcp.json` +
+  `.claude/agents/` in a CLI workspace, or `.claude/skills/playwright-cli/` in an MCP one.

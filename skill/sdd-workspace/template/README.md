@@ -44,6 +44,15 @@ matching paragraph there and delete the other):
   cross-repo features get a companion spec per repo, one marked lead. In this model the
   workspace has no `specs/` — see each repo's `specs/README.md`.
 
+## E2E testing (optional)
+
+If a linked repo is a browser-facing web app, this workspace can own a **workspace-level
+Playwright E2E suite** — tests that live here (not in the repo) and drive the running app as a
+black box, so a spec's browser-observable acceptance criteria are covered before it moves to
+`specs/done/`. It's added from the template's optional `e2e-playwright/` module (config, agents,
+auth harness). If this workspace adopted it, `npm run test:e2e` from the workspace root runs the
+suite; see the module's `README.md`. Delete this section if the workspace has no E2E suite.
+
 ## Files
 
 - `CLAUDE.md` — workspace rules (auto-loaded by Claude Code).
@@ -51,3 +60,5 @@ matching paragraph there and delete the other):
 - `specs/` — the SDD workflow (workspace-level model only; template, README, `done/`).
 - `.claude/settings.json` — shared, machine-agnostic permission allowlist.
 - `.claude/settings.local.json` — per-machine settings; **gitignored**, not shared.
+- `e2e/`, `playwright.config.ts`, `package.json`, `.mcp.json` — the Playwright E2E suite, **only
+  if** the optional `e2e-playwright/` module was adopted; otherwise absent.

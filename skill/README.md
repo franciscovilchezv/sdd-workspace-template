@@ -1,8 +1,9 @@
 # `sdd-workspace` skill
 
 A self-contained Claude Code skill that scaffolds an SDD workspace hub (the same thing this
-repo's root `README.md` describes doing by hand). It **bundles** `template/` and
-`spec-model-per-repo/`, so once installed it needs no network and no clone.
+repo's root `README.md` describes doing by hand). It **bundles** `template/`,
+`spec-model-per-repo/`, and the optional `e2e-playwright/` module, so once installed it needs no
+network and no clone.
 
 ## Install
 
@@ -29,8 +30,8 @@ In a Claude Code session, just describe the workspace — the skill triggers on 
 Claude runs the bundled procedure (`sdd-workspace/SKILL.md`): copy template → symlink repos →
 pick spec model → fill placeholders.
 
-## Keeping it in sync
+## Where the scaffolding lives
 
-The `template/` and `spec-model-per-repo/` trees here are **copies** of the ones at the repo
-root (required so the skill is portable). If you change the canonical trees at the repo root,
-re-copy them into `sdd-workspace/` (or vice-versa) so the two stay aligned.
+The `template/`, `spec-model-per-repo/`, and `e2e-playwright/` trees under `sdd-workspace/` are
+the **single source of truth** — there's no second copy at the repo root. Edit them here directly;
+the repo's root `README.md` and `CLAUDE.md` point at these paths.

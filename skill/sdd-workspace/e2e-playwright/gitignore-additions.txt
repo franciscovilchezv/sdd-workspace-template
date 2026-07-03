@@ -1,0 +1,13 @@
+# --- Append these lines to the workspace .gitignore when adopting Playwright E2E ---
+
+# Playwright E2E — workspace-level suite
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# E2E secrets (test-user creds) — commit only the .example
+.env.e2e
+.env.e2e.local

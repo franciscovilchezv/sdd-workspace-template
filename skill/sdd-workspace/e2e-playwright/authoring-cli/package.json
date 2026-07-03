@@ -1,0 +1,17 @@
+{
+  "name": "<workspace-name>-e2e",
+  "private": true,
+  "description": "Workspace-level Playwright E2E suite. Lives in the workspace and drives the linked app repo as a black box (see the adopting spec). Authored with the Playwright agent CLI (@playwright/cli). Does NOT touch the app repo.",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "e2e:auth": "playwright test --project=setup",
+    "e2e:report": "playwright show-report",
+    "pw:install": "playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/cli": "^0.1.15",
+    "@playwright/test": "^1.61.1",
+    "dotenv": "^17.4.2"
+  }
+}

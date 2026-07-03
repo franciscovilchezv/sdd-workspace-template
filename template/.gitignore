@@ -1,8 +1,0 @@
-# Claude Code per-machine settings (machine-specific paths, not shared)
-.claude/settings.local.json
-
-# Editor / OS noise
-.DS_Store
-
-# Note: the <repo>/ entries are symlinks into sibling repos. Git stores them as
-# relative-path symlinks; their contents are NOT tracked here (each has its own repo).
