@@ -117,7 +117,12 @@ links back to it.
    workspace-level E2E, adopt the `skill/sdd-workspace/e2e-playwright/` module — follow its `README.md` (copy the
    config/agents/harness in, fill placeholders, append its gitignore lines) and keep the optional
    E2E blocks in the workspace docs. Otherwise delete those *delete-if-unused* blocks.
-5. **Fill in placeholders.** Replace the `<...>` tokens in `CLAUDE.md`, `CONTEXT.md`,
+5. **Optionally add the `@`-mention suggester.** If you want `@<repo>/…` to autocomplete into the
+   linked repos (the built-in picker can't reach through the symlinks) and have `fd` installed,
+   adopt the `skill/sdd-workspace/at-mention-suggester/` module — follow its `README.md` (copy
+   `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block to `.claude/settings.json`,
+   paste its `CLAUDE.md` note). Otherwise skip it.
+6. **Fill in placeholders.** Replace the `<...>` tokens in `CLAUDE.md`, `CONTEXT.md`,
    `README.md`, `.claude/settings.json`, and `.vscode/settings.json`, and delete the spec-model
    paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
 
@@ -143,5 +148,9 @@ Alongside it under `skill/sdd-workspace/` (selective sources; not copied wholesa
   + `e2e/` authenticated-session harness) plus two interchangeable authoring loops,
   `authoring-mcp/` (`.mcp.json` + `init-agents` agents) and `authoring-cli/` (`@playwright/cli` +
   installed skills). Copied into the workspace only when it drives a web app; pick one loop.
+- `at-mention-suggester/` — an optional `@`-mention file suggester (`file-suggestion.sh` +
+  adoption `README.md`). The built-in `@` picker can't descend into the repo symlinks; this
+  drop-in `fileSuggestion` script does an `fd --follow` walk so `@<repo>/…` autocompletes into the
+  linked repos. Repo-agnostic (no placeholders); opt-in because it needs `fd` on `PATH`.
 
 Replace every `<placeholder>` (e.g. `<workspace-name>`, `<repo>`, `<project / product name>`).

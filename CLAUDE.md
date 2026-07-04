@@ -12,15 +12,15 @@ generator script; it's just Markdown scaffolding wired up by hand (usually by Cl
 
 The scaffolding lives in exactly one place: **`skill/sdd-workspace/`**, packaged as a Claude Code
 skill so it's self-contained. Everything a workspace is built from — `template/`,
-`spec-model-per-repo/`, and the optional `e2e-playwright/` module — sits under that directory. The
-repo root holds only these docs (`README.md`, `CLAUDE.md`) and the skill. See `README.md` for the
-full description and setup steps.
+`spec-model-per-repo/`, and the optional `e2e-playwright/` and `at-mention-suggester/` modules —
+sits under that directory. The repo root holds only these docs (`README.md`, `CLAUDE.md`) and the
+skill. See `README.md` for the full description and setup steps.
 
 ## Most of the Markdown here is scaffolding, not instructions
 
 The `.md` files under `skill/sdd-workspace/template/`, `skill/sdd-workspace/spec-model-per-repo/`,
-and `skill/sdd-workspace/e2e-playwright/` are **artifacts to be emitted into a new workspace**, not
-rules for this repo:
+`skill/sdd-workspace/e2e-playwright/`, and `skill/sdd-workspace/at-mention-suggester/` are
+**artifacts to be emitted into a new workspace**, not rules for this repo:
 
 - `skill/sdd-workspace/template/` is copied **wholesale** into a new workspace folder
   (conventionally `<parent>/workspaces/<name>/`).
@@ -32,6 +32,10 @@ rules for this repo:
   copied into the workspace only when a linked repo is a browser-facing app and the workspace
   adopts a workspace-level Playwright E2E suite. Its own `README.md` is the adoption guide, not a
   rule for this repo. Non-web workspaces skip it entirely.
+- `skill/sdd-workspace/at-mention-suggester/` is used **selectively** — its `file-suggestion.sh`
+  is copied into a workspace's `.claude/` (and wired into `.claude/settings.json` + `CLAUDE.md`)
+  only when the workspace opts into the `@`-mention suggester. Its own `README.md` is the adoption
+  guide, not a rule for this repo. Workspaces that skip it (or lack `fd`) copy nothing.
 
 So `template/CLAUDE.md`, `template/README.md`, etc. (under `skill/sdd-workspace/`) are guidance for
 the *generated* workspace, addressed to a future reader. **Do not treat their contents as
@@ -68,8 +72,17 @@ placeholders are meant to ship blank and be replaced when a workspace is instant
   `template/CLAUDE.md` E2E block carries a *keep-one* authoring-loop line for each. A generated
   workspace adopts exactly one loop and keeps only its line; edits to one loop must not silently
   diverge the shared runner or the other loop's parallel docs.
+- **Optional `@`-mention suggester stays optional and all-or-nothing.** The
+  `at-mention-suggester/` module (`file-suggestion.sh` + its `README.md`) is opt-in because it
+  needs `fd`. It ships **outside** `template/` so the default workspace doesn't carry it. If a
+  generated workspace adopts it, all three of `.claude/file-suggestion.sh`, the `fileSuggestion`
+  block in `.claude/settings.json`, and the `CLAUDE.md` note appear together; if not, none do. The
+  script is repo-agnostic (auto-discovers the symlinks) — it carries no `<...>` placeholders to
+  fill. The module's `README.md` and this repo's `README.md`/`SKILL.md` descriptions of it must
+  stay in sync.
 - **Placeholder convention.** Angle-bracket `<...>` tokens (e.g. `<workspace-name>`, `<repo>`,
-  `<project / product name>`) are the fill-in points. Keep them consistent across files.
+  `<project / product name>`) are the fill-in points. Keep them consistent across files. The
+  `at-mention-suggester/` script is the one exception — it's copied verbatim with no fill-ins.
 
 ## Instantiating a workspace (what to do when asked to set one up)
 
@@ -91,5 +104,9 @@ to copy from; that clone is throwaway. The steps (full version in `README.md`):
    `README.md` (copy the config/agents/harness into the workspace, fill placeholders, append its
    gitignore lines) and keep the optional E2E blocks in the workspace docs. Otherwise delete those
    delete-if-unused blocks.
-5. Fill in the `<...>` placeholders and delete the spec-model paragraph that doesn't apply in
+5. **Optional `@`-mention suggester:** if the workspace wants `@<repo>/…` to autocomplete into the
+   linked repos and has `fd`, adopt the `skill/sdd-workspace/at-mention-suggester/` module — follow
+   its `README.md` (copy `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block,
+   paste its `CLAUDE.md` note). Otherwise copy nothing.
+6. Fill in the `<...>` placeholders and delete the spec-model paragraph that doesn't apply in
    `CLAUDE.md` / `README.md`.

@@ -23,6 +23,9 @@ Everything you copy from lives next to this file:
   the per-repo spec model is chosen.
 - `e2e-playwright/` — copied into the workspace **only** if a linked repo is a browser-facing web
   app and the user wants a workspace-level Playwright E2E suite. Follow its `README.md`.
+- `at-mention-suggester/` — optional `@`-mention file suggester that reaches through the repo
+  symlinks (the built-in picker can't). Copied into the workspace **only** if the user wants it
+  and has `fd`. Follow its `README.md`.
 
 Refer to them by absolute path. The skill root is the directory containing this `SKILL.md`;
 build paths from there (e.g. `"$SKILL_DIR/template"`), don't assume the current working
@@ -44,6 +47,9 @@ Before scaffolding, make sure you have (ask only for what's missing):
    If yes, also ask the **authoring loop**: Playwright **MCP** (`init-agents` subagents) or the
    Playwright **agent CLI** (`@playwright/cli` + skills). If unstated, default to the CLI loop and
    say so.
+7. **`@`-mention suggester?** — whether to add the optional `at-mention-suggester/` module so
+   `@<repo>/…` autocompletes into the linked repos. Needs `fd` on `PATH`. If unstated, default to
+   **no** and mention it's available (offer it if `fd` is installed).
 
 ## Steps
 
@@ -85,7 +91,14 @@ Before scaffolding, make sure you have (ask only for what's missing):
    picked. If E2E is **not** adopted, **delete** those *delete-if-unused* E2E blocks from the five
    files so no stray E2E instructions ship.
 
-5. **Fill in placeholders.** Replace every `<...>` token — `<workspace-name>`,
+5. **Optional — add the `@`-mention suggester.** Only if the user wants `@<repo>/…` autocomplete
+   into the linked repos (needs `fd`). Follow `at-mention-suggester/README.md`: copy
+   `file-suggestion.sh` into the workspace `.claude/` (keep its executable bit), add the
+   `fileSuggestion` block to `.claude/settings.json`, and paste its `CLAUDE.md` note in. The script
+   is repo-agnostic — no placeholders. Skip entirely (copy nothing, add no `fileSuggestion` block)
+   if not adopted.
+
+6. **Fill in placeholders.** Replace every `<...>` token — `<workspace-name>`,
    `<project / product name>`, `<repo>`, `<one-line role>`, etc. — in `CLAUDE.md`, `CONTEXT.md`,
    `README.md`, `.claude/settings.json`, and `.vscode/settings.json` (and, if E2E was adopted,
    `playwright.config.ts`, `package.json`, `e2e/roles.ts`, `e2e/auth.setup.ts`). Fill the repo
@@ -94,8 +107,9 @@ Before scaffolding, make sure you have (ask only for what's missing):
    to fill roles, stack, and commands. **Leave blank any `<...>` you genuinely can't determine**
    and tell the user which ones need their input.
 
-6. **Confirm.** Report the created path, the symlinks and that each resolves, the chosen spec
-   model, whether E2E was added, and any placeholders you left for the user.
+7. **Confirm.** Report the created path, the symlinks and that each resolves, the chosen spec
+   model, whether E2E was added, whether the `@`-mention suggester was added, and any placeholders
+   you left for the user.
 
 ## Invariants — keep these true
 
@@ -114,3 +128,7 @@ Before scaffolding, make sure you have (ask only for what's missing):
 - **Exactly one authoring loop.** If E2E is adopted, copy the MCP loop **or** the CLI loop, not
   both, and keep only that loop's authoring-loop line in `CLAUDE.md`. Don't leave `.mcp.json` +
   `.claude/agents/` in a CLI workspace, or `.claude/skills/playwright-cli/` in an MCP one.
+- **`@`-mention suggester is all-or-nothing.** If adopted, the workspace has all three of
+  `.claude/file-suggestion.sh`, the `fileSuggestion` block in `.claude/settings.json`, and the
+  `CLAUDE.md` note. Never ship a `fileSuggestion` block pointing at a script that wasn't copied,
+  and never copy the script without wiring the setting. If not adopted, none of the three exist.
