@@ -3,9 +3,9 @@ import path from "node:path";
 import dotenv from "dotenv";
 // The authFile / DEFAULT_ROLE import and the `setup` + `chromium-authed`
 // projects below are only needed for AUTHENTICATED tests. If this workspace's
-// E2E is unauthenticated-only, delete e2e/roles.ts + e2e/auth.setup.ts, drop
-// this import, and remove those two projects. See README.md.
-import { authFile, DEFAULT_ROLE } from "./e2e/roles";
+// E2E is unauthenticated-only, delete e2e/support/roles.ts + e2e/auth.setup.ts,
+// drop this import, and remove those two projects. See README.md.
+import { authFile, DEFAULT_ROLE } from "./e2e/support/roles";
 
 // Credentials for authenticated tests live in .env.e2e (gitignored). See
 // .env.e2e.example. Absent in unauthenticated-only runs — that's fine.
@@ -19,9 +19,12 @@ dotenv.config({ path: path.resolve(__dirname, ".env.e2e") });
  * app source). That black-box nature is what lets them live at the workspace
  * level alongside specs/. See the adopting spec for the full rationale.
  *
- * Test layout:
+ * Test layout — spec files stay flat at the e2e/ root (one per SDD spec,
+ * filename === spec slug); all non-spec infrastructure lives under e2e/support/:
  *   e2e/*.spec.ts         unauthenticated tests (run signed-out)
  *   e2e/authed/*.spec.ts  authenticated tests (reuse a seeded-user session)
+ *   e2e/support/          shared non-spec helpers (roles registry, fixtures, …)
+ *   e2e/auth.setup.ts     setup project — logs each role in once (stays at root)
  */
 export default defineConfig({
   testDir: "./e2e",

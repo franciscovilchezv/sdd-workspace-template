@@ -54,9 +54,9 @@ selectors against the real DOM, reusing a role session, then writes the test:
   Skills are installed at `.claude/skills/playwright-cli/` (auto-discovered) — drive the live app
   with `playwright-cli` (`open` / `snapshot` / `click` / `fill` / `state-save`) to discover and
   verify selectors against the real DOM, reusing a role session, then write `e2e/<slug>.spec.ts`
-  (same kebab slug as the spec), run the suite, and iterate on failures using the trace/video
-  artifacts. Do NOT use the Playwright MCP here. If `playwright-cli` isn't global, use
-  `npx playwright-cli`.
+  (same kebab slug as the spec; spec files stay flat at the `e2e/` root, non-spec helpers live in
+  `e2e/support/`), run the suite, and iterate on failures using the trace/video artifacts. Do NOT
+  use the Playwright MCP here. If `playwright-cli` isn't global, use `npx playwright-cli`.
 ```
 
 The triage rule is the same as everywhere in this module: a red test is fixed by the app **code**,

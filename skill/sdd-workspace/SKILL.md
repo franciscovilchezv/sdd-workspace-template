@@ -101,7 +101,7 @@ Before scaffolding, make sure you have (ask only for what's missing):
 6. **Fill in placeholders.** Replace every `<...>` token — `<workspace-name>`,
    `<project / product name>`, `<repo>`, `<one-line role>`, etc. — in `CLAUDE.md`, `CONTEXT.md`,
    `README.md`, `.claude/settings.json`, and `.vscode/settings.json` (and, if E2E was adopted,
-   `playwright.config.ts`, `package.json`, `e2e/roles.ts`, `e2e/auth.setup.ts`). Fill the repo
+   `playwright.config.ts`, `package.json`, `e2e/support/roles.ts`, `e2e/auth.setup.ts`). Fill the repo
    table in `CLAUDE.md` (one row per linked repo) and the layout diagram in `README.md` to match
    the **actual** paths. Read each linked repo (its `CLAUDE.md`, `README`, `package.json`/manifest)
    to fill roles, stack, and commands. **Leave blank any `<...>` you genuinely can't determine**

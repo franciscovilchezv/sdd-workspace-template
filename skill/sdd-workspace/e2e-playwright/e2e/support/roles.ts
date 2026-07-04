@@ -11,6 +11,9 @@ import path from "node:path";
  * belong in code here rather than in env. A test picks the role it needs by
  * name; nobody edits env per feature.
  *
+ * This is shared, non-spec infrastructure, so it lives under e2e/support/
+ * (alongside any future fixtures/selectors) rather than beside the spec files.
+ *
  * DELETE this file (and auth.setup.ts) for unauthenticated-only suites.
  */
 export const SEED_USERS = {
@@ -25,9 +28,12 @@ export type Role = keyof typeof SEED_USERS;
 /** The default role for authed tests that don't care which user they run as. */
 export const DEFAULT_ROLE: Role = "admin";
 
-/** Storage-state file holding a role's saved session (written by auth.setup.ts). */
+/**
+ * Storage-state file holding a role's saved session (written by auth.setup.ts).
+ * Anchored two levels up (e2e/support/ -> workspace root) to reach playwright/.auth.
+ */
 export const authFile = (role: Role): string =>
-  path.join(__dirname, "..", "playwright/.auth", `${role}.json`);
+  path.join(__dirname, "..", "..", "playwright/.auth", `${role}.json`);
 
 /** The shared seed password, from env. Throws with guidance if unset. */
 export function seedPassword(): string {

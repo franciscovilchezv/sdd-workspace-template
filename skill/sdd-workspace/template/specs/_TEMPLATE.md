@@ -29,7 +29,7 @@
 repo. Cover the **browser-observable** criteria here; "None — unit-only" is valid for specs with
 no browser-facing behavior (e.g. schema/logic-only work).
 
-If the feature is role-specific, name the seeded **role(s)** the tests run as (from `e2e/roles.ts`);
+If the feature is role-specific, name the seeded **role(s)** the tests run as (from `e2e/support/roles.ts`);
 omit if the default role is fine. Name a role, never an email or password.
 
 A failing E2E test is fixed by changing the app **code** (usual case) or the **test** — never by

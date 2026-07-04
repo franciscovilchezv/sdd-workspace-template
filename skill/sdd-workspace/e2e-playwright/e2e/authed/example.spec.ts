@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { authFile } from "../roles";
+import { authFile } from "../support/roles";
 
 /**
  * Sample AUTHENTICATED E2E tests.

@@ -50,7 +50,7 @@ You will:
    For each scenario, set its test **File** to `e2e/<slug>/<fs-friendly-scenario>.spec.ts`
    (one test per file). If the feature requires a signed-in user, place tests under
    `e2e/authed/<slug>/...` instead so they run in the authenticated project and reuse the seeded
-   session; state which seeded role the feature needs (see `e2e/roles.ts`). The seed file is
+   session; state which seeded role the feature needs (see `e2e/support/roles.ts`). The seed file is
    `e2e/seed.spec.ts`.
 
 **Quality Standards**:

@@ -55,17 +55,23 @@ workspace can run a newer Playwright than the repo's pinned version. The config 
 dev server through the `<app-repo>/` symlink (`webServer.cwd`). The repo's own test setup is left
 untouched. Full rationale and adoption notes: `e2e-playwright/README.md`.
 
+**Layout:** spec files stay **flat** at the `e2e/` root — one `*.spec.ts` per spec, filename ===
+the spec's kebab-case slug — and all non-spec infrastructure (role registry, fixtures, selectors)
+lives under `e2e/support/`. The setup project stays at `e2e/auth.setup.ts`.
+
 <!-- Keep ONE authoring-loop line — whichever this workspace adopted — and delete the other. -->
 - **Authoring loop — Playwright MCP:** tests are authored via the `init-agents`
   planner/generator/healer subagents (see `.claude/agents/` + `.mcp.json`); generated test plans
   go under `e2e/specs/`, tests under `e2e/<slug>/`, never into the SDD `specs/`.
 - **Authoring loop — Playwright agent CLI (NOT the MCP):** author tests by driving `playwright-cli`
   (`open`/`snapshot`/`click`/`fill`/`state-save`) against the running app to verify selectors, then
-  write `e2e/<slug>.spec.ts`. Skills live at `.claude/skills/playwright-cli/` (auto-discovered).
-  Do not use the Playwright MCP.
+  write `e2e/<slug>.spec.ts` (flat at the `e2e/` root; non-spec helpers live in `e2e/support/`).
+  Skills live at `.claude/skills/playwright-cli/` (auto-discovered). Do not use the Playwright MCP.
 
 Part of a spec's **definition of done**: its browser-observable acceptance criteria must have a
 passing `e2e/<slug>.spec.ts` (same kebab-case slug as the spec) before it moves to `specs/done/`.
+The slug must be **unique** across the suite, so the spec→test mapping stays greppable even if the
+flat list is later grouped into subfolders (`e2e/<group>/<slug>.spec.ts`, glob `e2e/**/<slug>.spec.ts`).
 Unit-only specs (schema/logic, no browser-facing behavior) need no E2E file — the repo's own unit
 suites cover those.
 

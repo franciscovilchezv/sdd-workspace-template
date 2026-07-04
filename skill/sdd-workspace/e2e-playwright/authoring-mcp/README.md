@@ -43,7 +43,7 @@ output with these edits already applied:
 
 | Agent | Modification |
 |---|---|
-| **planner** | Saves plans to `e2e/specs/<slug>.plan.md` (same kebab slug as the SDD spec), **never** to the top-level SDD `specs/`. Routes generated tests to `e2e/<slug>/…`, or `e2e/authed/<slug>/…` for signed-in features, naming the seeded role from `e2e/roles.ts`. Seed file is `e2e/seed.spec.ts`. |
+| **planner** | Saves plans to `e2e/specs/<slug>.plan.md` (same kebab slug as the SDD spec), **never** to the top-level SDD `specs/`. Routes generated tests to `e2e/<slug>/…`, or `e2e/authed/<slug>/…` for signed-in features, naming the seeded role from `e2e/support/roles.ts`. Seed file is `e2e/seed.spec.ts`. |
 | **generator** | Example paths point at `e2e/specs/` + `e2e/seed.spec.ts` (the `e2e/`-namespaced layout). |
 | **healer** | Added a **triage guardrail**: it may fix locators/timing only. It must **not** weaken/delete an assertion to match buggy app behavior — a real product bug is left asserted, marked `test.fixme()` with a note, and surfaced for a human. |
 

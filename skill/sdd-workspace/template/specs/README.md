@@ -51,9 +51,11 @@ without adding a `specs/` workflow to them. Specs reference workspace docs
   [`../e2e-playwright/README.md`](../e2e-playwright/README.md) (or wherever you kept the module's
   README after adopting it).
 - **Definition of done includes E2E:** a spec's browser-observable acceptance criteria must have
-  a passing `e2e/<slug>.spec.ts` before it moves to `specs/done/`. Each spec's
-  **`## E2E coverage`** section says what's covered by Playwright vs. left to the repo's own
-  unit/component tests. Unit-only specs need no E2E file.
+  a passing `e2e/<slug>.spec.ts` before it moves to `specs/done/`. Spec files stay **flat** at the
+  `e2e/` root with a **unique** slug (non-spec helpers live in `e2e/support/`), so the spec→test
+  mapping stays greppable even if the list is later grouped into subfolders (`e2e/**/<slug>.spec.ts`).
+  Each spec's **`## E2E coverage`** section says what's covered by Playwright vs. left to the repo's
+  own unit/component tests. Unit-only specs need no E2E file.
 - **Failing-test triage** — a red E2E test routes to exactly one of three fixes by root cause:
   1. the app **code** (most common — reality doesn't match the spec, so fix the app),
   2. the **test** (stale selector / race — patch the test), or

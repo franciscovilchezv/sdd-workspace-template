@@ -1,5 +1,5 @@
 import { test as setup, expect } from "@playwright/test";
-import { SEED_USERS, authFile, seedPassword, type Role } from "./roles";
+import { SEED_USERS, authFile, seedPassword, type Role } from "./support/roles";
 
 /**
  * Auth setup — runs (in parallel) before the authenticated project.
@@ -16,7 +16,7 @@ import { SEED_USERS, authFile, seedPassword, type Role } from "./roles";
  * If your app has MFA, extend this step to satisfy it (e.g. a test-only bypass
  * or a seeded TOTP secret) before saving storageState.
  *
- * DELETE this file (and roles.ts) for unauthenticated-only suites.
+ * DELETE this file (and support/roles.ts) for unauthenticated-only suites.
  */
 for (const role of Object.keys(SEED_USERS) as Role[]) {
   setup(`authenticate: ${role}`, async ({ page }) => {

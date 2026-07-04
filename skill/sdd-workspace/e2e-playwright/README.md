@@ -46,9 +46,14 @@ the MCP loop suits teams that prefer structured subagents.
 | `.env.e2e.example` | Template for the one secret authenticated tests need. Copy to `.env.e2e` (gitignored). |
 | `e2e/example.spec.ts` | Sample **unauthenticated** test — replace with a real signed-out flow. |
 | `e2e/authed/example.spec.ts` | Sample **authenticated** test — starts already signed in via saved session. |
-| `e2e/roles.ts` | Seeded-user registry + `authFile`/`seedPassword` helpers. **Adapt to your app's auth.** Authenticated suites only. |
-| `e2e/auth.setup.ts` | Setup project: logs each role in once, saves per-role `storageState`. **Adapt selectors + post-login URL.** Authenticated suites only. |
+| `e2e/support/roles.ts` | Seeded-user registry + `authFile`/`seedPassword` helpers. Shared non-spec infra, so it lives under `e2e/support/`. **Adapt to your app's auth.** Authenticated suites only. |
+| `e2e/auth.setup.ts` | Setup project: logs each role in once, saves per-role `storageState`. Stays at the `e2e/` root (the `setup` project matches it there). **Adapt selectors + post-login URL.** Authenticated suites only. |
 | `gitignore-additions.txt` | Lines to append to the workspace `.gitignore`. |
+
+**Layout convention:** spec files stay **flat** at the `e2e/` root — one `*.spec.ts` per SDD spec,
+filename === the spec's kebab-case slug — while all **non-spec infrastructure** (the role
+registry, and any future fixtures/selectors) lives under `e2e/support/`. This keeps `e2e/`'s
+organizing principle obvious as the suite grows: the root is specs, `support/` is shared helpers.
 
 Then, from your chosen loop's subdir: `package.json` (approach-flavored) plus its authoring
 scaffolds. Everything uses `<placeholder>` tokens (`<workspace-name>`, `<app-repo>`,
@@ -86,9 +91,9 @@ Run these from the workspace folder (the copy of `template/`).
    ```
 
 7. **Authenticated (optional).** If features need a signed-in user:
-   - Adapt `e2e/roles.ts` to your app's seeded users (roles, emails/usernames, shared-vs-per-user
-     password). For unauthenticated-only suites, **delete** `roles.ts` + `auth.setup.ts` and the
-     `setup`/`chromium-authed` projects in `playwright.config.ts`.
+   - Adapt `e2e/support/roles.ts` to your app's seeded users (roles, emails/usernames,
+     shared-vs-per-user password). For unauthenticated-only suites, **delete** `e2e/support/roles.ts`
+     + `e2e/auth.setup.ts` and the `setup`/`chromium-authed` projects in `playwright.config.ts`.
    - Adapt `e2e/auth.setup.ts` selectors, the login route, and the post-login URL assertion. Add
      MFA handling here if the app has it.
    - `cp .env.e2e.example .env.e2e` and set `E2E_USER_PASSWORD`.
@@ -105,10 +110,13 @@ Run these from the workspace folder (the copy of `template/`).
 Once adopted, these become part of the workspace's SDD workflow (identical for both loops):
 
 - **E2E is part of done.** A spec's **browser-observable** acceptance criteria must have a passing
-  `e2e/<slug>.spec.ts` (same kebab slug as the spec) before it moves to `specs/done/`. Unit-only
-  specs (schema/logic, no browser-facing behavior) need **no** E2E file — don't generate empty
-  ones. Each spec's `## E2E coverage` section records what's covered here vs. left to the repo's
-  own unit/component tests.
+  `e2e/<slug>.spec.ts` (same kebab slug as the spec) before it moves to `specs/done/`. The slug must
+  be **unique** across the suite so the spec→test mapping stays greppable — spec files sit flat at
+  the `e2e/` root today, and if the flat list ever grows unwieldy they may be grouped in subfolders
+  (`e2e/<group>/<slug>.spec.ts`, glob `e2e/**/<slug>.spec.ts`) without breaking that mapping.
+  Non-spec helpers stay out of the spec files, under `e2e/support/`. Unit-only specs (schema/logic,
+  no browser-facing behavior) need **no** E2E file — don't generate empty ones. Each spec's
+  `## E2E coverage` section records what's covered here vs. left to the repo's own unit/component tests.
 - **Triage a red test to exactly one fix, by root cause:** (1) the app **code** (most common —
   reality doesn't match the spec, so fix the app), (2) the **test** (stale selector / race — patch
   the test), or (3) the **spec** (only when a human decides the requirement itself was wrong —
