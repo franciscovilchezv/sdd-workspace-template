@@ -11,8 +11,10 @@ repos' files are unreachable via `@`-mentions.
 
 This module replaces the picker with a small script wired in through Claude Code's `fileSuggestion`
 setting. The script does an `fd --follow` walk that reaches through the symlinks and emits
-`<repo>/…`-prefixed paths. It is **repo-agnostic** — it discovers every symlinked repo under the
-workspace root, so it needs no per-repo configuration and no placeholder filling.
+`<repo>/…`-prefixed candidates — **folders** (with a trailing `/`) and **files**, plus `./` for the
+current directory, so any of them can be `@`-tagged. It is **repo-agnostic** — it discovers every
+symlinked repo under the workspace root, so it needs no per-repo configuration and no placeholder
+filling.
 
 This is **opt-in** (unlike the rest of `template/`, which is copied wholesale) because it needs
 `fd` on `PATH`. Skip it if you don't have `fd` or don't want a custom picker.
@@ -64,10 +66,10 @@ Standalone, before restarting (the script reads a JSON query on stdin, one path 
 
 ```bash
 printf '{"query":"<repo>"}' | .claude/file-suggestion.sh     # ranked matches under the repo
-printf '{"query":""}'       | .claude/file-suggestion.sh     # top files (empty query)
+printf '{"query":""}'       | .claude/file-suggestion.sh     # ./, then folders, then files
 printf '{"query":"zzznope"}'| .claude/file-suggestion.sh     # nothing, exit 0
 echo "exit: $?"
 ```
 
-Then restart and type `@<repo>/` in the picker — suggestions from inside the linked repo should
-appear.
+Then restart and type `@<repo>/` in the picker — folders (trailing `/`) and files from inside the
+linked repo should appear.

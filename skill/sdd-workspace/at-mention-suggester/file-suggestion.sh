@@ -6,8 +6,8 @@
 # root, and Claude Code's built-in @ picker does not descend into symlinked
 # directories that leave the project root — so `@<repo>/...` never autocompletes.
 # This script uses `fd --follow` to walk through those symlinks, emitting
-# `<repo>/...`-prefixed paths that match exactly what the user types. It is
-# repo-agnostic: it discovers every symlinked repo under the workspace root, so it
+# `<repo>/...`-prefixed paths (folders and files) that match what the user types. It
+# is repo-agnostic: it discovers every symlinked repo under the workspace root, so it
 # drops into any workspace built from this template unchanged.
 #
 # Wired in via `.claude/settings.json` -> "fileSuggestion": { "type": "command", ... }.
@@ -37,17 +37,29 @@ fi
 
 cd "$ROOT"
 
-# --- list candidate files -------------------------------------------------------
+# --- list candidates (dirs + files) ---------------------------------------------
 # --follow: traverse the linked-repo symlinks. fd honors .gitignore, so each repo's
-# node_modules/build output is excluded automatically. `--type f --hidden` with .git
-# and node_modules excluded keeps the list to real, relevant source files.
-fd_list() {
-  fd --follow --type f --hidden --exclude .git --exclude node_modules "$@"
+# node_modules/build output is excluded automatically. --hidden with .git/node_modules
+# excluded keeps the list to real, relevant entries.
+fd_base() {
+  fd --follow --hidden --exclude .git --exclude node_modules "$@"
 }
 
-# Empty query: just return the first MAX files (no ranking to do).
+# Candidate stream, in browse order for the no-query case:
+#   1. "./"  — the current directory itself (so it can be tagged).
+#   2. directories (fd already appends a trailing "/", so folders read as folder
+#      mentions and are visually distinct from files).
+#   3. files.
+# fzf re-ranks this for real queries, so the order only governs the empty case.
+candidates() {
+  printf './\n'
+  fd_base --type d
+  fd_base --type f
+}
+
+# Empty query: return the first MAX candidates (no ranking to do).
 if [ -z "$query" ]; then
-  fd_list --max-results "$MAX" .
+  candidates | sed -n "1,${MAX}p"
   exit 0
 fi
 
@@ -57,7 +69,7 @@ fi
 # mid-pipe `head`) avoids SIGPIPE surfacing as a non-zero exit under pipefail;
 # we trim to MAX afterward with sed.
 if command -v fzf >/dev/null 2>&1; then
-  results="$(fd_list | fzf --filter="$query" 2>/dev/null || true)"
+  results="$(candidates | fzf --filter="$query" 2>/dev/null || true)"
   printf '%s\n' "$results" | sed '/^$/d' | sed -n "1,${MAX}p"
   exit 0
 fi
@@ -65,7 +77,7 @@ fi
 # Fallback (no fzf): split the query on '/', escape each segment's regex
 # metacharacters, and rejoin with '.*'. So "<repo>/settings" -> "<repo>.*settings",
 # matching "<repo>/app/(app)/settings/..." across intermediate dirs; "roles" stays a
-# plain substring. --full-path matches against the whole path.
+# plain substring. Match against the whole candidate line (dirs included).
 esc() { printf '%s' "$1" | sed 's/[][(){}.^$*+?|\\]/\\&/g'; }
 pattern=""
 IFS='/' read -ra parts <<<"$query"
@@ -73,4 +85,4 @@ for p in "${parts[@]}"; do
   [ -z "$p" ] && continue
   if [ -z "$pattern" ]; then pattern="$(esc "$p")"; else pattern="$pattern.*$(esc "$p")"; fi
 done
-fd_list --ignore-case --full-path --max-results "$MAX" -- "$pattern"
+candidates | grep -iE -- "$pattern" | sed -n "1,${MAX}p"
