@@ -41,8 +41,8 @@ the MCP loop suits teams that prefer structured subagents.
 
 | File | Role |
 |---|---|
-| `playwright.config.ts` | `testDir: ./e2e`, `webServer` boots the app via the `<app-repo>/` symlink, `list` + HTML reporters, screenshot/video/trace **on** for every test. |
-| `tsconfig.json` | Scopes the TS server to `e2e/` + `playwright.config.ts` and pulls in `@types/node` (`process`, `__dirname`). Excludes the `<app-repo>/` symlink so the app's own config wins there. |
+| `playwright.config.ts` | `testDir: ./e2e`, `webServer` boots the app via the app repo's real path (`cwd`, e.g. `../../<app-repo>`), `list` + HTML reporters, screenshot/video/trace **on** for every test. |
+| `tsconfig.json` | Scopes the TS server to `e2e/` + `playwright.config.ts` and pulls in `@types/node` (`process`, `__dirname`). The app repo lives outside the workspace (referenced by path, not copied in), so nothing app-specific needs excluding. |
 | `.env.e2e.example` | Template for the one secret authenticated tests need. Copy to `.env.e2e` (gitignored). |
 | `e2e/example.spec.ts` | Sample **unauthenticated** test — replace with a real signed-out flow. |
 | `e2e/authed/example.spec.ts` | Sample **authenticated** test — starts already signed in via saved session. |
@@ -71,10 +71,11 @@ Run these from the workspace folder (the copy of `template/`).
    authoring scaffolds (`.mcp.json` + `.claude/agents/` for MCP; `playwright-cli install --skills`
    for CLI).
 
-3. **Fill placeholders.** In `playwright.config.ts` set `<app-repo>` (the symlink name of the
-   web app), `<dev-server-cmd>` (e.g. `npm run dev` / `bun dev`), and the `url`/`baseURL` port if
-   not 3000. In `tsconfig.json` set the same `<app-repo>` in `exclude`. In `package.json` set
-   `<workspace-name>`.
+3. **Fill placeholders.** In `playwright.config.ts` set `webServer.cwd` to the app repo's real
+   path (the same one granted via `additionalDirectories`, e.g. `../../<app-repo>`),
+   `<dev-server-cmd>` (e.g. `npm run dev` / `bun dev`), and the `url`/`baseURL` port if not 3000.
+   In `package.json` set `<workspace-name>`. (`tsconfig.json` needs no app-repo edit — the app
+   lives outside the workspace.)
 
 4. **Wire gitignore.** Append `gitignore-additions.txt` to the workspace `.gitignore`.
 
@@ -87,7 +88,7 @@ Run these from the workspace folder (the copy of `template/`).
 6. **Unauthenticated first.** Point `e2e/example.spec.ts` at a real deterministic signed-out
    flow and get it green:
    ```bash
-   npm run test:e2e       # boots the app's dev server via the symlink
+   npm run test:e2e       # boots the app's dev server via its real path (webServer.cwd)
    ```
 
 7. **Authenticated (optional).** If features need a signed-in user:

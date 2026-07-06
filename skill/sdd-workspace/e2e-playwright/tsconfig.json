@@ -12,5 +12,5 @@
     "resolveJsonModule": true
   },
   "include": ["e2e/**/*.ts", "playwright.config.ts", "*.ts"],
-  "exclude": ["node_modules", "<app-repo>"]
+  "exclude": ["node_modules"]
 }

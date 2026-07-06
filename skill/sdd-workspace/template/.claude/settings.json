@@ -1,7 +1,7 @@
 {
   "permissions": {
+    "additionalDirectories": ["<path-to-repo>"],
     "allow": [
-      "Read(<repo>/**)",
       "Bash(find *)",
       "Bash(grep *)",
       "Bash(rg *)",

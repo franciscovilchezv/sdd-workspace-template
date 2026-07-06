@@ -3,9 +3,10 @@
 Reusable scaffolding for a **Claude Code workspace hub** that drives one or more code repos
 **spec-first**, without modifying those repos. Captures three practices:
 
-1. **Symlink workspace** — a thin workspace folder that links sibling repos via `../../<repo>`
-   symlinks, so Claude Code (and your editor) see them together while each repo keeps its own
-   `.git`, deps, and conventions.
+1. **Referenced-repo workspace** — a thin workspace folder that references sibling repos by their
+   real path (e.g. `../../<repo>`) — granted to Claude Code via `permissions.additionalDirectories`
+   and listed in a VS Code `.code-workspace` (no symlinks) — so Claude Code (and your editor) see
+   them together while each repo keeps its own `.git`, deps, and conventions.
 2. **Spec-driven development (SDD)** — features are written as specs *before* implementation,
    then implemented against. Specs are the source of truth.
 3. **A choice of spec placement** — each workspace picks one of two models:
@@ -27,24 +28,23 @@ subagents). Pick one. See `skill/sdd-workspace/e2e-playwright/README.md`.
 
 The **canonical** shape (as in the reference workspaces) is a shared parent with the repos flat
 beside a `workspaces/` folder. But repos don't have to be flat siblings — they can be nested in
-subfolders, or live somewhere else entirely; each symlink just has to resolve to the real repo:
+subfolders, or live somewhere else entirely; each granted path just has to resolve to the real repo:
 
 ```
 <parent>/
-├── <repo>/                          # a repo as a flat sibling (canonical)
+├── <repo>/                          # a repo as a flat sibling (canonical)  → granted as ../../<repo>
 ├── <group>/
-│   └── <nested-repo>/               # …or nested inside a subfolder
+│   └── <nested-repo>/               # …or nested inside a subfolder         → granted as ../../<group>/<nested-repo>
 └── workspaces/
     └── <workspace-name>/            # a copy of skill/sdd-workspace/template/, placeholders filled in
-        ├── <repo>        -> ../../<repo>
-        └── <nested-repo> -> ../../<group>/<nested-repo>
+        ├── .claude/settings.json    #   grants each repo via permissions.additionalDirectories
+        └── <workspace-name>.code-workspace  #   lists this workspace + each repo (real paths)
 
-/elsewhere/<external-repo>/          # …or outside <parent> altogether
-#   (symlinked as  <external-repo> -> /elsewhere/<external-repo>)
+/elsewhere/<external-repo>/          # …or outside <parent> altogether       → granted by absolute path
 ```
 
-The only hard requirement is that each `<repo>` symlink resolves to the real repo — its target
-is whatever relative or absolute path points there from the workspace folder.
+The only hard requirement is that each granted path resolves to the real repo — it's whatever
+relative or absolute path points there from the workspace folder. No symlinks are created.
 
 ## Set up a workspace
 
@@ -98,16 +98,17 @@ dir — so you have the scaffolding under `skill/sdd-workspace/` (`template/`,
 links back to it.
 
 1. **Copy the template.** Copy `skill/sdd-workspace/template/` to your workspace folder — conventionally
-   `<parent>/workspaces/<workspace-name>/`, but anywhere works as long as the symlinks resolve.
-2. **Symlink each repo.** From the workspace folder, create one symlink per repo, named after
-   the repo, pointing at wherever the real repo actually lives:
-   ```bash
-   ln -s ../../<repo>                 <repo>            # flat sibling (canonical)
-   ln -s ../../<group>/<nested-repo>  <nested-repo>     # nested in a subfolder
-   ln -s /elsewhere/<external-repo>   <external-repo>   # anywhere on disk (absolute)
+   `<parent>/workspaces/<workspace-name>/`, but anywhere works as long as the granted paths resolve.
+2. **Grant each repo by its real path (no symlinks).** For each repo, work out the path that
+   resolves to it from the workspace folder, then wire it into **both** `.claude/settings.json`
+   (`permissions.additionalDirectories` — the file-access grant) and
+   `<workspace-name>.code-workspace` (a `folders` entry — the VS Code multi-root view):
+   ```jsonc
+   // .claude/settings.json → permissions.additionalDirectories
+   ["../../<repo>", "../../<group>/<nested-repo>", "/elsewhere/<external-repo>"]
    ```
-   Pick each target per repo — a relative path (any depth) or an absolute one. The only test is
-   that `ls <repo>/` from the workspace shows that repo's files.
+   Pick each path per repo — a relative path (any depth) or an absolute one. The only test is
+   that `ls <path>/` from the workspace shows that repo's files.
 3. **Pick a spec model.**
    - *Workspace-level* (default): keep the workspace's `specs/`.
    - *Per-repo*: delete the workspace's `specs/`, then copy
@@ -117,14 +118,16 @@ links back to it.
    workspace-level E2E, adopt the `skill/sdd-workspace/e2e-playwright/` module — follow its `README.md` (copy the
    config/agents/harness in, fill placeholders, append its gitignore lines) and keep the optional
    E2E blocks in the workspace docs. Otherwise delete those *delete-if-unused* blocks.
-5. **Optionally add the `@`-mention suggester.** If you want `@<repo>/…` to autocomplete into the
-   linked repos (the built-in picker can't reach through the symlinks) and have `fd` installed,
-   adopt the `skill/sdd-workspace/at-mention-suggester/` module — follow its `README.md` (copy
+5. **Optionally add the `@`-mention suggester.** If you want `@../../<repo>/…` to autocomplete into
+   the granted repos (the built-in picker only walks the workspace root, so it ignores
+   `additionalDirectories`) and have `fd` installed, adopt the
+   `skill/sdd-workspace/at-mention-suggester/` module — follow its `README.md` (copy
    `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block to `.claude/settings.json`,
    paste its `CLAUDE.md` note). Otherwise skip it.
-6. **Fill in placeholders.** Replace the `<...>` tokens in `CLAUDE.md`, `CONTEXT.md`,
-   `README.md`, `.claude/settings.json`, and `.vscode/settings.json`, and delete the spec-model
-   paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
+6. **Fill in placeholders + rename the code-workspace.** Replace the `<...>` tokens in `CLAUDE.md`,
+   `CONTEXT.md`, `README.md`, `.claude/settings.json`, `.vscode/settings.json`, and
+   `<workspace-name>.code-workspace` (rename that file to your real workspace name), and delete the
+   spec-model paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
 
 ## Files
 
@@ -136,9 +139,12 @@ In `skill/sdd-workspace/template/` (copied into each new workspace):
 - `CONTEXT.md` — domain/architecture summary (read manually).
 - `README.md` — workspace layout + setup.
 - `specs/README.md`, `specs/_TEMPLATE.md`, `specs/done/` — the workspace-level SDD workflow.
-- `.claude/settings.json` / `.claude/settings.local.json` — permission allowlist.
-- `.vscode/settings.json` — multi-repo editor config.
-- `.gitignore` — ignores local settings + notes the symlinks.
+- `.claude/settings.json` / `.claude/settings.local.json` — the `additionalDirectories` grant for
+  the linked repos plus a permission allowlist.
+- `.vscode/settings.json` — editor config.
+- `<workspace-name>.code-workspace` — VS Code multi-root file listing the workspace + each repo by
+  its real path.
+- `.gitignore` — ignores local settings; notes that the linked repos are referenced, not tracked.
 
 Alongside it under `skill/sdd-workspace/` (selective sources; not copied wholesale):
 
@@ -149,8 +155,9 @@ Alongside it under `skill/sdd-workspace/` (selective sources; not copied wholesa
   `authoring-mcp/` (`.mcp.json` + `init-agents` agents) and `authoring-cli/` (`@playwright/cli` +
   installed skills). Copied into the workspace only when it drives a web app; pick one loop.
 - `at-mention-suggester/` — an optional `@`-mention file suggester (`file-suggestion.sh` +
-  adoption `README.md`). The built-in `@` picker can't descend into the repo symlinks; this
-  drop-in `fileSuggestion` script does an `fd --follow` walk so `@<repo>/…` autocompletes into the
-  linked repos. Repo-agnostic (no placeholders); opt-in because it needs `fd` on `PATH`.
+  adoption `README.md`). The built-in `@` picker only walks the workspace root, so it ignores
+  `additionalDirectories`; this drop-in `fileSuggestion` script reads that setting and walks each
+  granted repo so `@../../<repo>/…` autocompletes into them. Repo-agnostic (no placeholders);
+  opt-in because it needs `fd` on `PATH` (`jq` to read the setting).
 
 Replace every `<placeholder>` (e.g. `<workspace-name>`, `<repo>`, `<project / product name>`).

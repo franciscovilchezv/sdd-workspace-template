@@ -8,7 +8,9 @@ full detail, in each linked repo's own `CLAUDE.md`.
 ## What this workspace is
 
 <One paragraph: what the product/system is, who it's for, and which repos collaborate to
-deliver it. Name each linked repo and its role.>
+deliver it. Name each linked repo and its role. The repos are referenced by their real path,
+granted to Claude Code via `permissions.additionalDirectories` in `.claude/settings.json` (no
+symlink); this workspace adds only the spec-driven workflow and Claude Code config on top.>
 
 ## Architecture at a glance
 
@@ -22,7 +24,7 @@ deliver it. Name each linked repo and its role.>
      e.g.: "E2E — workspace-level Playwright suite driving <app-repo> as a black box." Delete
      this line otherwise. -->
 
-## Common commands (run inside the relevant repo)
+## Common commands (run inside the relevant repo, e.g. `../../<repo>/`)
 
 - `<cmd>` — <what it does>
 - `<cmd>` — <what it does>

@@ -4,5 +4,6 @@
 # Editor / OS noise
 .DS_Store
 
-# Note: the <repo>/ entries are symlinks into sibling repos. Git stores them as
-# relative-path symlinks; their contents are NOT tracked here (each has its own repo).
+# Note: the linked repos are NOT tracked here — this workspace references them by
+# their real path via `permissions.additionalDirectories` in `.claude/settings.json`
+# (and lists them in <workspace-name>.code-workspace). Each repo has its own git.

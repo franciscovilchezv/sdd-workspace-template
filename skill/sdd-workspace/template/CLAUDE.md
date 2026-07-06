@@ -7,16 +7,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is the **<workspace-name>** workspace — a Claude Code hub for working on
 **<project / product name>**.
 
-It links one or more git repositories via symlinks. Each repo has its own `.git`, dependencies,
+It references one or more git repositories by their **real path** — granted to Claude Code via
+`permissions.additionalDirectories` in `.claude/settings.json` and listed in
+`<workspace-name>.code-workspace` (no symlinks). Each repo has its own `.git`, dependencies,
 `.env`, and its own `CLAUDE.md` with detailed architecture notes — **read the repo's `CLAUDE.md`
 before working in it.**
 
-| Symlink | Repo | Role | Details |
+| Path | Repo | Role | Details |
 |---|---|---|---|
-| `<repo>/` | `../../<repo>` | <one-line role> | `<repo>/CLAUDE.md` |
-<!-- add a row per linked repo -->
+| `../../<repo>/` | `<repo>` | <one-line role> | `../../<repo>/CLAUDE.md` |
+<!-- add a row per linked repo; the Path is each repo's real relative (or absolute) location -->
 
-Always `cd` into the relevant repo directory before running commands.
+Always `cd` into the relevant repo's real path before running commands.
 
 ## Domain context
 
@@ -52,8 +54,8 @@ The workspace owns a Playwright E2E suite at the workspace-root `e2e/`, run with
 — deliberately not in `<app-repo>` — because E2E tests are black-box: they drive the running app
 over HTTP/DOM and never `import` app source, so they have no reason to live in the repo, and the
 workspace can run a newer Playwright than the repo's pinned version. The config boots the app's
-dev server through the `<app-repo>/` symlink (`webServer.cwd`). The repo's own test setup is left
-untouched. Full rationale and adoption notes: `e2e-playwright/README.md`.
+dev server via the app repo's real path (`webServer.cwd`, e.g. `../../<app-repo>`). The repo's own
+test setup is left untouched. Full rationale and adoption notes: `e2e-playwright/README.md`.
 
 **Layout:** spec files stay **flat** at the `e2e/` root — one `*.spec.ts` per spec, filename ===
 the spec's kebab-case slug — and all non-spec infrastructure (role registry, fixtures, selectors)

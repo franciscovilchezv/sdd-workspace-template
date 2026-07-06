@@ -1,8 +1,6 @@
 {
   "git.autoRepositoryDetection": true,
-  "git.scanRepositories": [
-    "<repo>"
-  ],
+  "git.openRepositoryInParentFolders": "always",
   "files.exclude": {
     "**/node_modules": true,
     "**/.next": true

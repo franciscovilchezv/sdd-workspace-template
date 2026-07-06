@@ -5,10 +5,12 @@ Guidance for Claude Code when working in **this** repo.
 ## What this repo is
 
 A **meta-template**: reusable scaffolding for creating Claude Code *workspace hubs* that drive
-one or more code repos spec-first, via symlinks (the repos can be siblings, nested in
-subfolders, or elsewhere on disk). This repo is **not** itself a
-workspace — it's the source you copy from. There is no app, no build, no dependencies, and no
-generator script; it's just Markdown scaffolding wired up by hand (usually by Claude).
+one or more code repos spec-first. The workspace references each repo by its **real path** —
+granted to Claude Code via `permissions.additionalDirectories` and listed in a VS Code
+`.code-workspace` (no symlinks) — and the repos can be siblings, nested in subfolders, or
+elsewhere on disk. This repo is **not** itself a workspace — it's the source you copy from. There
+is no app, no build, no dependencies, and no generator script; it's just Markdown (and one shell
+script) scaffolding wired up by hand (usually by Claude).
 
 The scaffolding lives in exactly one place: **`skill/sdd-workspace/`**, packaged as a Claude Code
 skill so it's self-contained. Everything a workspace is built from — `template/`,
@@ -44,12 +46,15 @@ placeholders are meant to ship blank and be replaced when a workspace is instant
 
 ## Invariants to preserve when editing
 
-- **Symlink math.** In the canonical layout a workspace lives at `<parent>/workspaces/<name>/`
-  and its repo symlinks are `../../<repo>`, resolving to `<parent>/<repo>` (two levels up). But
-  the layout is not fixed — repos may sit at other depths or parents, be nested in subfolders,
-  or live outside `<parent>` entirely, so each symlink's target (relative *or* absolute) is
-  whatever actually resolves to the real repo. Keep the diagrams and prose consistent, and
-  compute the correct target for the real layout rather than assuming `../../`.
+- **Path math (no symlinks).** In the canonical layout a workspace lives at
+  `<parent>/workspaces/<name>/` and grants its repos by the path `../../<repo>`, resolving to
+  `<parent>/<repo>` (two levels up). But the layout is not fixed — repos may sit at other depths
+  or parents, be nested in subfolders, or live outside `<parent>` entirely, so each granted path
+  (relative *or* absolute) is whatever actually resolves to the real repo. A repo's path is
+  declared in **two** places that must agree — `permissions.additionalDirectories` in
+  `.claude/settings.json` and the `folders` list in `<workspace-name>.code-workspace`. Keep the
+  diagrams and prose consistent, and compute the correct path for the real layout rather than
+  assuming `../../`. The workspace creates **no symlinks**.
 - **Single source of truth.** All scaffolding lives under `skill/sdd-workspace/` and nowhere else
   — there is no second copy at the repo root to keep in sync. Edit the trees there directly; the
   repo docs (`README.md`, `CLAUDE.md`, `skill/README.md`) point at those paths.
@@ -77,12 +82,16 @@ placeholders are meant to ship blank and be replaced when a workspace is instant
   needs `fd`. It ships **outside** `template/` so the default workspace doesn't carry it. If a
   generated workspace adopts it, all three of `.claude/file-suggestion.sh`, the `fileSuggestion`
   block in `.claude/settings.json`, and the `CLAUDE.md` note appear together; if not, none do. The
-  script is repo-agnostic (auto-discovers the symlinks) — it carries no `<...>` placeholders to
-  fill. The module's `README.md` and this repo's `README.md`/`SKILL.md` descriptions of it must
-  stay in sync.
+  script is repo-agnostic (reads the repos from `permissions.additionalDirectories` at query time)
+  — it carries no `<...>` placeholders to fill. It needs `fd` and `jq` (`jq` to read the setting;
+  without it, it degrades to workspace-root suggestions only). The module's `README.md` and this
+  repo's `README.md`/`SKILL.md` descriptions of it must stay in sync.
 - **Placeholder convention.** Angle-bracket `<...>` tokens (e.g. `<workspace-name>`, `<repo>`,
-  `<project / product name>`) are the fill-in points. Keep them consistent across files. The
-  `at-mention-suggester/` script is the one exception — it's copied verbatim with no fill-ins.
+  `<path-to-repo>`, `<project / product name>`) are the fill-in points. Keep them consistent
+  across files. One placeholder appears in a **filename** — `<workspace-name>.code-workspace` —
+  which is renamed (not just filled) when a workspace is instantiated. The
+  `at-mention-suggester/` script is the one content exception — it's copied verbatim with no
+  fill-ins.
 
 ## Instantiating a workspace (what to do when asked to set one up)
 
@@ -92,10 +101,11 @@ this repo's URL (Claude opened in the user's `workspaces/` dir), clone it first
 to copy from; that clone is throwaway. The steps (full version in `README.md`):
 
 1. Copy `skill/sdd-workspace/template/` to the workspace folder.
-2. For each repo, `ln -s <path-to-repo> <repo>` from the workspace folder (a relative path of any
-   depth, or an absolute one), then confirm `ls <repo>/` shows that repo's files. Compute the
-   target for the **actual** layout — only use `../../<repo>` if the canonical two-levels-up
-   shape truly holds.
+2. For each repo, grant its real path (no symlink) in **both** places: add it to
+   `permissions.additionalDirectories` in `.claude/settings.json` and to the `folders` list in
+   `<workspace-name>.code-workspace`. Use a relative path of any depth or an absolute one, then
+   confirm `ls <path>/` shows that repo's files. Compute the path for the **actual** layout —
+   only use `../../<repo>` if the canonical two-levels-up shape truly holds.
 3. Pick the spec model: keep the workspace `specs/` (workspace-level), or delete it and copy
    `skill/sdd-workspace/spec-model-per-repo/{README.md,_TEMPLATE.md}` into each repo's `specs/`
    plus a `done/` (per-repo).
@@ -108,5 +118,6 @@ to copy from; that clone is throwaway. The steps (full version in `README.md`):
    linked repos and has `fd`, adopt the `skill/sdd-workspace/at-mention-suggester/` module — follow
    its `README.md` (copy `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block,
    paste its `CLAUDE.md` note). Otherwise copy nothing.
-6. Fill in the `<...>` placeholders and delete the spec-model paragraph that doesn't apply in
-   `CLAUDE.md` / `README.md`.
+6. Fill in the `<...>` placeholders (including `<path-to-repo>` in `.claude/settings.json` and the
+   `.code-workspace`), rename `<workspace-name>.code-workspace` to the real workspace name, and
+   delete the spec-model paragraph that doesn't apply in `CLAUDE.md` / `README.md`.

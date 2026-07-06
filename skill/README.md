@@ -27,8 +27,9 @@ In a Claude Code session, just describe the workspace — the skill triggers on 
 > Set up an SDD workspace named `checkout-flow` linking `/Users/me/git/api-service` and
 > `/Users/me/git/web-app`, per-repo spec model.
 
-Claude runs the bundled procedure (`sdd-workspace/SKILL.md`): copy template → symlink repos →
-pick spec model → fill placeholders.
+Claude runs the bundled procedure (`sdd-workspace/SKILL.md`): copy template → grant each repo by
+its real path (in `additionalDirectories` + the `.code-workspace`, no symlinks) → pick spec model
+→ fill placeholders.
 
 ## Where the scaffolding lives
 

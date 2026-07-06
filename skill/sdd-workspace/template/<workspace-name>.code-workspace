@@ -1,0 +1,10 @@
+{
+  "folders": [
+    { "name": "<workspace-name>", "path": "." },
+    { "name": "<repo>", "path": "<path-to-repo>" }
+  ],
+  "settings": {
+    "git.openRepositoryInParentFolders": "always",
+    "git.autoRepositoryDetection": true
+  }
+}

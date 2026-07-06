@@ -14,7 +14,7 @@ dotenv.config({ path: path.resolve(__dirname, ".env.e2e") });
 /**
  * Workspace-level Playwright config for the <workspace-name> SDD workspace.
  *
- * These E2E tests live HERE, not in the linked <app-repo> repo, and drive the
+ * These E2E tests live HERE, not in the <app-repo> repo, and drive the
  * running app as a black box (navigate URLs, assert on the DOM; never import
  * app source). That black-box nature is what lets them live at the workspace
  * level alongside specs/. See the adopting spec for the full rationale.
@@ -74,14 +74,16 @@ export default defineConfig({
     // Add Firefox / WebKit variants here when cross-browser coverage is needed.
   ],
 
-  // Boots the app's dev server through the <app-repo>/ symlink. The app needs
-  // its own .env to come up. Reuses an already-running dev server locally so you
-  // can keep the dev server open in <app-repo>/ while iterating on tests.
+  // Boots the app's dev server via the app repo's real path. The app needs its
+  // own .env to come up. Reuses an already-running dev server locally so you can
+  // keep the dev server open in the app repo while iterating on tests.
   webServer: {
     // Replace <dev-server-cmd> with the app's dev command, e.g. "npm run dev",
     // "bun dev", "pnpm dev". Override at runtime with PLAYWRIGHT_START_CMD.
     command: process.env.PLAYWRIGHT_START_CMD ?? "<dev-server-cmd>",
-    cwd: "./<app-repo>",
+    // Real path to the app repo (the same one granted via additionalDirectories),
+    // e.g. "../../<app-repo>". Adjust for the actual layout.
+    cwd: "../../<app-repo>",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
