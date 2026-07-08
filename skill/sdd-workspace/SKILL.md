@@ -30,6 +30,12 @@ Everything you copy from lives next to this file:
   `additionalDirectories` and autocompletes files in the granted repos (the built-in picker only
   walks the workspace root). Copied into the workspace **only** if the user wants it and has `fd`.
   Follow its `README.md`.
+- `update-from-template/` — optional skill installed into the workspace's `.claude/skills/` so it
+  can later pull template changes **without clobbering its customizations** (a semantic reconcile,
+  not a re-copy). Copied into the workspace **only** if the user wants it to track template
+  updates. Follow its `README.md`.
+- `VERSION` — the template's version anchor, recorded into the workspace as `.template-version`
+  when the `update-from-template/` module is adopted (the reconcile's base ref).
 
 Refer to them by absolute path. The skill root is the directory containing this `SKILL.md`;
 build paths from there (e.g. `"$SKILL_DIR/template"`), don't assume the current working
@@ -54,6 +60,9 @@ Before scaffolding, make sure you have (ask only for what's missing):
 7. **`@`-mention suggester?** — whether to add the optional `at-mention-suggester/` module so
    `@<repo>/…` autocompletes into the linked repos. Needs `fd` on `PATH`. If unstated, default to
    **no** and mention it's available (offer it if `fd` is installed).
+8. **Track template updates?** — whether to install the optional `update-from-template/` skill so
+   the workspace can later pull template changes via a customization-preserving reconcile. If
+   unstated, default to **no** and mention it's available.
 
 ## Steps
 
@@ -111,7 +120,14 @@ Before scaffolding, make sure you have (ask only for what's missing):
    `additionalDirectories`, no placeholders. Skip entirely (copy nothing, add no `fileSuggestion`
    block) if not adopted.
 
-6. **Fill in placeholders + rename the code-workspace.** Replace every `<...>` token —
+6. **Optional — install the update-from-template skill.** Only if the workspace should be able to
+   later pull template changes. Follow `update-from-template/README.md`: copy
+   `update-from-template/workspace-skill/SKILL.md` into `.claude/skills/update-from-template/`, and
+   write a `.template-version` file at the workspace root recording the base ref — the clone's
+   `git rev-parse HEAD` if you scaffolded from a clone, else this skill's `VERSION` string. Skip
+   entirely (copy nothing, write no `.template-version`) if not adopted.
+
+7. **Fill in placeholders + rename the code-workspace.** Replace every `<...>` token —
    `<workspace-name>`, `<project / product name>`, `<repo>`, `<path-to-repo>`, `<one-line role>`,
    etc. — in `CLAUDE.md`, `CONTEXT.md`, `README.md`, `.claude/settings.json`,
    `.vscode/settings.json`, and `<workspace-name>.code-workspace` (and, if E2E was adopted,
@@ -124,9 +140,9 @@ Before scaffolding, make sure you have (ask only for what's missing):
    `package.json`/manifest) to fill roles, stack, and commands. **Leave blank any `<...>` you
    genuinely can't determine** and tell the user which ones need their input.
 
-7. **Confirm.** Report the created path, each repo's granted path and that it resolves (`ls <path>/`),
-   the chosen spec model, whether E2E was added, whether the `@`-mention suggester was added, and
-   any placeholders you left for the user.
+8. **Confirm.** Report the created path, each repo's granted path and that it resolves (`ls <path>/`),
+   the chosen spec model, whether E2E was added, whether the `@`-mention suggester was added,
+   whether the update-from-template skill was installed, and any placeholders you left for the user.
 
 ## Invariants — keep these true
 
@@ -152,3 +168,7 @@ Before scaffolding, make sure you have (ask only for what's missing):
   `.claude/file-suggestion.sh`, the `fileSuggestion` block in `.claude/settings.json`, and the
   `CLAUDE.md` note. Never ship a `fileSuggestion` block pointing at a script that wasn't copied,
   and never copy the script without wiring the setting. If not adopted, none of the three exist.
+- **update-from-template is all-or-nothing.** If adopted, the workspace has **both**
+  `.claude/skills/update-from-template/SKILL.md` and a `.template-version` file at its root. Never
+  install the skill without recording `.template-version` (it has no base to reconcile against),
+  and never leave a `.template-version` with no skill. If not adopted, neither exists.

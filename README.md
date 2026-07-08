@@ -124,7 +124,13 @@ links back to it.
    `skill/sdd-workspace/at-mention-suggester/` module — follow its `README.md` (copy
    `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block to `.claude/settings.json`,
    paste its `CLAUDE.md` note). Otherwise skip it.
-6. **Fill in placeholders + rename the code-workspace.** Replace the `<...>` tokens in `CLAUDE.md`,
+6. **Optionally install the update-from-template skill.** If the workspace should be able to pull
+   later template changes, adopt the `skill/sdd-workspace/update-from-template/` module — follow
+   its `README.md` (copy its skill into `.claude/skills/update-from-template/` and record a
+   `.template-version` base ref). It reconciles the workspace docs (and any adopted optional
+   modules) against the latest template **without clobbering the workspace's customizations**.
+   Otherwise skip it.
+7. **Fill in placeholders + rename the code-workspace.** Replace the `<...>` tokens in `CLAUDE.md`,
    `CONTEXT.md`, `README.md`, `.claude/settings.json`, `.vscode/settings.json`, and
    `<workspace-name>.code-workspace` (rename that file to your real workspace name), and delete the
    spec-model paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
@@ -159,5 +165,12 @@ Alongside it under `skill/sdd-workspace/` (selective sources; not copied wholesa
   `additionalDirectories`; this drop-in `fileSuggestion` script reads that setting and walks each
   granted repo so `@../../<repo>/…` autocompletes into them. Repo-agnostic (no placeholders);
   opt-in because it needs `fd` on `PATH` (`jq` to read the setting).
+- `update-from-template/` — an optional skill (`workspace-skill/SKILL.md` + adoption `README.md`)
+  installed into a generated workspace's `.claude/skills/` so it can later pull template changes
+  via a **customization-preserving 3-way reconcile** (not a re-copy — the workspace is a
+  customized fork). Records a `.template-version` base ref at instantiation; needs `git` and
+  network access. Opt-in.
+- `VERSION` — the template's version anchor, recorded into a workspace as `.template-version` when
+  the `update-from-template/` module is adopted; the reconcile's base ref.
 
 Replace every `<placeholder>` (e.g. `<workspace-name>`, `<repo>`, `<project / product name>`).

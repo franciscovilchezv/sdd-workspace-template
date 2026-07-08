@@ -2,8 +2,8 @@
 
 A self-contained Claude Code skill that scaffolds an SDD workspace hub (the same thing this
 repo's root `README.md` describes doing by hand). It **bundles** `template/`,
-`spec-model-per-repo/`, and the optional `e2e-playwright/` and `at-mention-suggester/` modules, so
-once installed it needs no network and no clone.
+`spec-model-per-repo/`, and the optional `e2e-playwright/`, `at-mention-suggester/`, and
+`update-from-template/` modules, so once installed it needs no network and no clone.
 
 ## Install
 
@@ -33,6 +33,7 @@ its real path (in `additionalDirectories` + the `.code-workspace`, no symlinks) 
 
 ## Where the scaffolding lives
 
-The `template/`, `spec-model-per-repo/`, `e2e-playwright/`, and `at-mention-suggester/` trees under
-`sdd-workspace/` are the **single source of truth** — there's no second copy at the repo root. Edit
-them here directly; the repo's root `README.md` and `CLAUDE.md` point at these paths.
+The `template/`, `spec-model-per-repo/`, `e2e-playwright/`, `at-mention-suggester/`, and
+`update-from-template/` trees under `sdd-workspace/` are the **single source of truth** — there's
+no second copy at the repo root. Edit them here directly; the repo's root `README.md` and
+`CLAUDE.md` point at these paths.

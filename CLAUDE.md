@@ -14,9 +14,10 @@ script) scaffolding wired up by hand (usually by Claude).
 
 The scaffolding lives in exactly one place: **`skill/sdd-workspace/`**, packaged as a Claude Code
 skill so it's self-contained. Everything a workspace is built from — `template/`,
-`spec-model-per-repo/`, and the optional `e2e-playwright/` and `at-mention-suggester/` modules —
-sits under that directory. The repo root holds only these docs (`README.md`, `CLAUDE.md`) and the
-skill. See `README.md` for the full description and setup steps.
+`spec-model-per-repo/`, and the optional `e2e-playwright/`, `at-mention-suggester/`, and
+`update-from-template/` modules (plus a `VERSION` anchor) — sits under that directory. The repo
+root holds only these docs (`README.md`, `CLAUDE.md`) and the skill. See `README.md` for the full
+description and setup steps.
 
 ## Most of the Markdown here is scaffolding, not instructions
 
@@ -38,6 +39,12 @@ The `.md` files under `skill/sdd-workspace/template/`, `skill/sdd-workspace/spec
   is copied into a workspace's `.claude/` (and wired into `.claude/settings.json` + `CLAUDE.md`)
   only when the workspace opts into the `@`-mention suggester. Its own `README.md` is the adoption
   guide, not a rule for this repo. Workspaces that skip it (or lack `fd`) copy nothing.
+- `skill/sdd-workspace/update-from-template/` is used **selectively** — its
+  `workspace-skill/SKILL.md` is copied into a workspace's `.claude/skills/update-from-template/`
+  (with a `.template-version` base ref written from the `VERSION` anchor) only when the workspace
+  opts into tracking template updates. Its own `README.md` is the adoption guide, not a rule for
+  this repo. The skill's own instructions are addressed to Claude running **inside a generated
+  workspace**, not to this repo. Workspaces that skip it copy nothing.
 
 So `template/CLAUDE.md`, `template/README.md`, etc. (under `skill/sdd-workspace/`) are guidance for
 the *generated* workspace, addressed to a future reader. **Do not treat their contents as
@@ -86,6 +93,15 @@ placeholders are meant to ship blank and be replaced when a workspace is instant
   — it carries no `<...>` placeholders to fill. It needs `fd` and `jq` (`jq` to read the setting;
   without it, it degrades to workspace-root suggestions only). The module's `README.md` and this
   repo's `README.md`/`SKILL.md` descriptions of it must stay in sync.
+- **Optional `update-from-template/` stays optional and all-or-nothing.** The module ships
+  **outside** `template/` so the default workspace doesn't carry it. If a generated workspace
+  adopts it, **both** `.claude/skills/update-from-template/SKILL.md` and a `.template-version` file
+  (the reconcile's base ref, seeded from the `VERSION` anchor) appear together; if not, neither
+  does. The installed skill is a **customization-preserving reconcile**, not a re-copy — a change
+  to how it reconciles (which files, which invariants it protects) must stay consistent with the
+  spec-model / E2E / `@`-mention invariants above, since those are exactly the customizations it
+  must not clobber. Bump `VERSION` when a template change should reach existing workspaces, and
+  keep the module's `README.md` and this repo's `README.md`/`SKILL.md` descriptions of it in sync.
 - **Placeholder convention.** Angle-bracket `<...>` tokens (e.g. `<workspace-name>`, `<repo>`,
   `<path-to-repo>`, `<project / product name>`) are the fill-in points. Keep them consistent
   across files. One placeholder appears in a **filename** — `<workspace-name>.code-workspace` —
@@ -118,6 +134,11 @@ to copy from; that clone is throwaway. The steps (full version in `README.md`):
    linked repos and has `fd`, adopt the `skill/sdd-workspace/at-mention-suggester/` module — follow
    its `README.md` (copy `file-suggestion.sh` into `.claude/`, add the `fileSuggestion` block,
    paste its `CLAUDE.md` note). Otherwise copy nothing.
-6. Fill in the `<...>` placeholders (including `<path-to-repo>` in `.claude/settings.json` and the
+6. **Optional update-from-template skill:** if the workspace should be able to pull later template
+   changes, adopt the `skill/sdd-workspace/update-from-template/` module — follow its `README.md`
+   (copy its skill into `.claude/skills/update-from-template/` and write a `.template-version` base
+   ref: the clone's `git rev-parse HEAD` if you scaffolded from a clone, else the `VERSION`
+   string). Otherwise copy nothing.
+7. Fill in the `<...>` placeholders (including `<path-to-repo>` in `.claude/settings.json` and the
    `.code-workspace`), rename `<workspace-name>.code-workspace` to the real workspace name, and
    delete the spec-model paragraph that doesn't apply in `CLAUDE.md` / `README.md`.
