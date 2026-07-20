@@ -39,6 +39,9 @@ specs. Mark one repo's spec as the "lead". Write "Self-contained" if it touches 
 
 ## Open questions
 
-<Anything undecided that needs an answer before or during implementation. Once a question is
-answered, remove it from here and fold the decision into the acceptance criteria / changes —
-this section should only ever list what's still open.>
+<Anything undecided that needs an answer before or during implementation. The moment a question is
+answered, delete it from here and fold the decision into the acceptance criteria / Changes — this
+section lists only what is *still* open. An implementation agent reads everything here as unsettled,
+so a resolved item left behind (worse, one whose stale wording contradicts the decision) will
+mislead it. Don't recap answered questions or narrate what was decided — that's history the agent
+never saw; when nothing is open, the section is just "None.">

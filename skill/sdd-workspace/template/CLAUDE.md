@@ -47,6 +47,14 @@ in each affected repo, cross-linked, with one marked as the lead. Copy that repo
 `specs/_TEMPLATE.md`, fill it in, and implement against it; once it's fully implemented, move it
 to that repo's `specs/done/` so `specs/` lists only in-flight work. See each repo's `specs/README.md`.
 
+<!-- COMMON (both models) — keep this paragraph regardless of which model you kept above. -->
+**Keep each spec's `## Open questions` current.** The moment a question is answered, delete it from
+that section and fold the decision into the acceptance criteria / Changes. That section lists only
+what is *still* open — an implementation agent reads everything under it as unsettled, so a resolved
+item left behind (especially one whose stale wording contradicts the decision) will mislead it.
+Don't recap answered questions or narrate what was decided — that's history the agent never saw;
+when nothing is open, the section is just "None."
+
 <!-- OPTIONAL E2E BLOCK — keep only if this workspace adopted the Playwright E2E module
      (e2e-playwright/); delete this whole "## E2E testing" section otherwise. -->
 ## E2E testing (Playwright)
